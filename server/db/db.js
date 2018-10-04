@@ -46,10 +46,13 @@ module.exports = {
         });
     },
 
-    createAccount(userId) { //创建账号
+    createAccount(userId, cb) { //创建账号
         this.isAccountExist(userId, (bool) => {
-            if (!bool) {
+            if (bool) {
                 console.log('====account has already existed====');
+                if (cb) {
+                    cb(null);
+                }
                 return;
             }
             let data = {
@@ -64,6 +67,7 @@ module.exports = {
                     console.error('err: ', err);
                     return;
                 }
+                cb(docs);
                 console.log('====create account successful====');
             });
         })

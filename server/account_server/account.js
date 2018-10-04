@@ -1,5 +1,10 @@
 let express = require('express');
 let app = express();
+let db = require('../db/db');
+
+function send(res, ret) {
+    return res.send(JSON.stringify(ret));
+}
 
 //设置跨越访问
 app.all('*', (req, res, next) => {
@@ -13,13 +18,30 @@ app.all('*', (req, res, next) => {
 
 //注册账号
 app.get('/register', (req, res) => {
-    let userId = req.query.userId;
-    console.log('====userId====: ', userId);
+    let requestData = req.query.data;
+    let msgId = req.query.msgId;
+    let userId = requestData.userId;
+    db.createAccount(userId, (data) => {
+        // if (data === null) {
+        //     let ret = {
+        //         msgId: 1001,
+        //         errcode: 0,
+        //         data: data
+        //     };
+        //     send(res, ret);
+        // }
+        let ret = {
+            msgId: 1001,
+            errcode: 0,
+            data: data
+        };
+        send(res, ret);
+    });
 })
 
 module.exports = {
     start(config) { //config对应account的配置
         app.listen(config.port);
-        console.log('>>>>>account server is listening on <<<<<<', config.port);
+        console.log('>>>>>account server is listening on <<<<<<', config.host + ':' + config.port);
     }
 }
