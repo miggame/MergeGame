@@ -50,7 +50,7 @@ cc.Class({
     showTipsWithOkCancelBtn(word, okCb, cancelCb, closeCb) {
         this.btnOk.node.active = true;
         this.btnCancel.node.active = true;
-        this.lblTips.string = word;
+        this.lblTips.string = word.toUpperCase();
 
         this._okCb = okCb;
         this._cancelCb = cancelCb;
@@ -60,7 +60,7 @@ cc.Class({
     showTipsWithOkBtn(word, okCb, cancelCb, closeCb) {
         this.btnOk.node.active = true;
         this.btnCancel.node.active = false;
-        this.lblTips.string = word;
+        this.lblTips.string = word.toUpperCase();
 
         this._okCb = okCb;
         this._cancelCb = cancelCb;
@@ -71,7 +71,7 @@ cc.Class({
         this.btnOk.node.active = true;
         this.btnCancel.node.active = false;
         this.btnClose.node.active = false;
-        this.lblTips.string = word;
+        this.lblTips.string = word.toUpperCase();
 
         this._okCb = okCb;
         this._cancelCb = cancelCb;

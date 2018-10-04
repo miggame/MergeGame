@@ -17,34 +17,30 @@ module.exports = {
             return;
         }
 
-        let url = GameNetCfg.getHttpUrl();
-        this._showSendData(msg, data);
-
         let xhr = new XMLHttpRequest();
         xhr.ontimeout = this._onTimeOut.bind(this);
         xhr.timeout = 6000;
+
         xhr.onreadystatechange = () => {
             if (xhr.readyState === 4 && (xhr.status >= 200 && xhr.status < 400)) {
                 let text = xhr.responseText;
                 let result = JSON.parse(text);
                 ObserverMgr.dispatchMsg(GameMsgGlobal.Net.Recv, result);
-                let msgID = result[0];
-                let msgCode = result[1];
-                let msgData = result[2];
-
-                this._showRecvData(msgStr, msgCode, msgData);
-
-                if (msgCode !== undefined && msgStr !== null) {
-                    if (msgCode === GameMsgGlobal.NetCode.SuccessHttp.id) {
-                        ObserverMgr.dispatchMsg(msgStr, msgData);
-                        return;
-                    }
-                    return ObserverMgr.dispatchMsg(GameMsgGlobal.Net.MsgErr, result);
-                }
+                // let msgID = result[0];
+                // let msgCode = result[1];
+                // let msgData = result[2];
+                // let msgStr = GameMsgHttp.getMsgById(msgID);
+                // this._showRecvData(msgStr, msgCode, msgData);
+                console.log('result: ', result);
+                // if (msgCode !== undefined && msgStr !== null) {
+                //     if (msgCode === GameMsgGlobal.NetCode.SuccessHttp.id) {
+                //         ObserverMgr.dispatchMsg(msgStr, msgData);
+                //         return;
+                //     }
+                //     return ObserverMgr.dispatchMsg(GameMsgGlobal.Net.MsgErr, result);
+                // }
                 console.log('[Http] 缺少code字段');
-                return;
             }
-            console.log('NetHttpMgr error : ', xhr.readyState);
             return;
         }
 
@@ -53,20 +49,35 @@ module.exports = {
             this._onTimeOut();
         }
 
-        let enCodeData = {
-            msg_id: msg.id,
+        let url = GameNetCfg.getHttpUrl();
+        this._showSendData(msg, data);
+        let str = '?';
+        let sendData = {
+            msgId: msg.id,
             data: data
         };
-        let sendData = DataEncode.encodeHttp(enCodeData);
-        let dataStr = JSON.stringify(sendData);
-        xhr.open('post', url, true);
-        ObserverMgr.dispatchMsg(GameMsgGlobal.Net.Send, null);
+        for (const key in sendData) {
+            if (sendData.hasOwnProperty(key)) {
+                const element = sendData[key];
+                if (str !== '?') {
+                    str += '&';
+                }
+                str += key + '=' + element;
+            }
+        }
+        let path = msg.msg;
+        let requestUrl = url + '/' + path + encodeURI(str);
+        console.log('requestUrl: ', requestUrl);
+        xhr.open('GET', requestUrl, true);
 
         try {
-            xhr.send(dataStr);
+            xhr.send(JSON.stringify());
         } catch (e) {
             console.log('e: ', e);
         }
+
+        ObserverMgr.dispatchMsg(GameMsgGlobal.Net.Send, null);
+
     },
 
     _showSendData(msg, data) {

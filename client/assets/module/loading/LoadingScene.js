@@ -1,4 +1,6 @@
 let Observer = require('Observer');
+let NetMaskModule = require('NetMaskModule');
+let NetHttpMgr = require('NetHttpMgr');
 
 cc.Class({
     extends: Observer,
@@ -30,6 +32,12 @@ cc.Class({
     },
     onLoad() {
         this._initMsg();
+        // NetMaskModule.preload();
+        NetMaskModule.initEvent();
+        let sendData = {
+            userId: _.uniqueId('account')
+        };
+        NetHttpMgr.quest(GameMsgHttp.Msg.Register, sendData);
     },
 
     start() {
