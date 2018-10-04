@@ -7,7 +7,7 @@ window.GameMsgGlobal = {
 
     NetCode: {
         SuccessHttp: {
-            id: 200,
+            id: 0,
             msg: '成功'
         }
     }

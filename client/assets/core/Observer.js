@@ -10,8 +10,7 @@ cc.Class({
         }
         // ObserverMgr.addEventListener(GameMsgGlobal.Net.MsgErr, this._onErrorDeal, this);
     },
-    onLoad() {
-    },
+    onLoad() {},
     _getMsgList() {
         return [];
     },

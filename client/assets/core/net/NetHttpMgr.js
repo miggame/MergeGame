@@ -26,19 +26,19 @@ module.exports = {
                 let text = xhr.responseText;
                 let result = JSON.parse(text);
                 ObserverMgr.dispatchMsg(GameMsgGlobal.Net.Recv, result);
-                // let msgID = result[0];
-                // let msgCode = result[1];
-                // let msgData = result[2];
-                // let msgStr = GameMsgHttp.getMsgById(msgID);
-                // this._showRecvData(msgStr, msgCode, msgData);
+                let msgID = result.msgID;
+                let msgCode = result.errcode;
+                let msgData = result.data;
+                let msgStr = GameMsgHttp.getMsgById(msgID);
+                this._showRecvData(msgStr, msgCode, msgData);
                 console.log('result: ', result);
-                // if (msgCode !== undefined && msgStr !== null) {
-                //     if (msgCode === GameMsgGlobal.NetCode.SuccessHttp.id) {
-                //         ObserverMgr.dispatchMsg(msgStr, msgData);
-                //         return;
-                //     }
-                //     return ObserverMgr.dispatchMsg(GameMsgGlobal.Net.MsgErr, result);
-                // }
+                if (msgCode !== undefined && msgStr !== null) {
+                    if (msgCode === GameMsgGlobal.NetCode.SuccessHttp.id) {
+                        ObserverMgr.dispatchMsg(msgStr, msgData);
+                        return;
+                    }
+                    return ObserverMgr.dispatchMsg(GameMsgGlobal.Net.MsgErr, result);
+                }
                 console.log('[Http] 缺少code字段');
             }
             return;
