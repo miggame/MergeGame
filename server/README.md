@@ -6,7 +6,7 @@
 
 >参数：userId
 
->返回：data为null，表示已注册
+>返回：data为null，表示已注册
 
     {
         msgId: 1001,
