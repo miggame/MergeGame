@@ -22,14 +22,6 @@ app.get('/register', (req, res) => {
     let msgId = req.query.msgId;
     let userId = requestData.userId;
     db.createAccount(userId, (data) => {
-        // if (data === null) {
-        //     let ret = {
-        //         msgId: 1001,
-        //         errcode: 0,
-        //         data: data
-        //     };
-        //     send(res, ret);
-        // }
         let ret = {
             msgId: 1001,
             errcode: 0,
