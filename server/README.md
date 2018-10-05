@@ -14,3 +14,21 @@ MergeGame服务端接口
         errmsg:'ok'
         data: {userid:'11232131', gold:0, diamond:0, historyGold:0, medal: 0, level:0}
     }
+
+
+
+2.七日登录
+
+>接口：sevenDay
+
+>参数：userId
+
+>返回：errcode:0成功，9002内部错误
+
+    {
+        msgId:2001,
+        errcode:0,
+        errmsg:'ok',
+        data:{sevenDay:[0, 0, 0, 0, 0, 0, 0],sumDay:1, sevenDayReward:{} }
+    }
+
