@@ -12,5 +12,5 @@ MergeGame服务端接口
         msgId: 1001,
         errcode: 0,
         errmsg:'ok'
-        data: data    
+        data: {userid:'11232131', gold:0, diamond:0, historyGold:0, medal: 0, level:0}
     }
