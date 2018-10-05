@@ -1,5 +1,5 @@
-#MergeGame服务端接口
-
+MergeGame服务端接口
+======
 1.注册登录
 
 >接口：register
