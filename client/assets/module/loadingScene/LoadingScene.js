@@ -33,7 +33,7 @@ cc.Class({
     },
     _onMsg(msg, data) {
         if (msg === GameMsgHttp.Msg.Register.msg) {
-            console.log('data: ', data);
+            GameData.initPlayerInfo(data);
             cc.director.loadScene('MainScene');
         }
     },
