@@ -44,6 +44,7 @@ app.get('/register', (req, res) => {
     });
 });
 
+//七日登录
 app.get('/sevenDay', (req, res) => {
     let reqData = req.query;
     let userId = reqData.userId;
@@ -67,6 +68,30 @@ app.get('/sevenDay', (req, res) => {
                 errmsg: 'interval error',
                 data: null
             };
+        }
+        send(res, ret);
+    });
+});
+
+//更新七日登录
+app.get('/updateSevenDay', (req, res) => {
+    let reqData = req.query;
+    let userId = reqData.userId;
+    let index = reqData.index;
+    db.updateSevenDay(userId, index, (data) => {
+        let ret = {
+            msgId: 2002,
+            errcode: 0,
+            errmsg: 'ok',
+            data: data
+        }
+        if (data === null) {
+            ret = {
+                msgId: 2002,
+                errcode: 9003,
+                errmsg: 'param error',
+                data: null
+            }
         }
         send(res, ret);
     });
