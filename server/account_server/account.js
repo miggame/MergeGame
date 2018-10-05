@@ -18,15 +18,24 @@ app.all('*', (req, res, next) => {
 
 //注册账号
 app.get('/register', (req, res) => {
-    let requestData = req.query.data;
-    let msgId = req.query.msgId;
-    let userId = requestData.userId;
+    let reqData = req.query;
+    let userId = reqData.userId;
+
     db.createAccount(userId, (data) => {
         let ret = {
             msgId: 1001,
             errcode: 0,
+            errmsg: 'register_ok',
             data: data
         };
+        if (data === null) {
+            ret = {
+                msgId: 1001,
+                errcode: 9001,
+                errmsg: 'exist more than one account',
+                data: null
+            }
+        }
         send(res, ret);
     });
 })
