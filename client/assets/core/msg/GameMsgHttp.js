@@ -3,6 +3,10 @@ window.GameMsgHttp = {
         Register: {
             id: 1001,
             msg: 'register'
+        },
+        SevenDay: {
+            id: 2001,
+            msg: 'sevenDay'
         }
     },
     getMsgById(id) {

@@ -52,10 +52,8 @@ module.exports = {
         let url = GameNetCfg.getHttpUrl();
         this._showSendData(msg, data);
         let str = '?';
-        console.log('data: ', data);
         let msgId = msg.id;
         data.msgId = msgId;
-        console.log('data: ', data);
         for (const key in data) {
             if (data.hasOwnProperty(key)) {
                 const element = data[key];
@@ -66,9 +64,7 @@ module.exports = {
             }
         }
         let path = msg.msg;
-        console.log('str: ', str);
         let requestUrl = url + '/' + path + encodeURI(str);
-        console.log('requestUrl: ', requestUrl);
         xhr.open('GET', requestUrl, true);
 
         try {
@@ -78,7 +74,6 @@ module.exports = {
         }
 
         ObserverMgr.dispatchMsg(GameMsgGlobal.Net.Send, null);
-
     },
 
     _showSendData(msg, data) {
@@ -122,7 +117,7 @@ module.exports = {
     _showRecvData(msg, code, data) {
         let recvData = {
             time: this._getTime(),
-            msg: msg,
+            msg: msg.msg,
             code: code,
             data: data
         };
