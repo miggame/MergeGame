@@ -4,5 +4,15 @@ module.exports = {
         let parent = node.parent;
         let childrenCount = parent.childrenCount;
         node.setLocalZOrder(childrenCount);
-    }
+    },
+
+    //获取本地存储
+    getStorage(str) {
+        let storage = cc.sys.localStorage.getItem(str);
+        return JSON.parse(storage);
+    },
+
+    setStorage(str, obj) {
+        cc.sys.localStorage.setItem(str, JSON.stringify(obj));
+    },
 };

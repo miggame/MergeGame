@@ -26,12 +26,11 @@ module.exports = {
                 let text = xhr.responseText;
                 let result = JSON.parse(text);
                 ObserverMgr.dispatchMsg(GameMsgGlobal.Net.Recv, result);
-                let msgID = result.msgID;
                 let msgCode = result.errcode;
                 let msgData = result.data;
-                let msgStr = GameMsgHttp.getMsgById(msgID);
+                let msgId = result.msgId;
+                let msgStr = GameMsgHttp.getMsgById(msgId);
                 this._showRecvData(msgStr, msgCode, msgData);
-                console.log('result: ', result);
                 if (msgCode !== undefined && msgStr !== null) {
                     if (msgCode === GameMsgGlobal.NetCode.SuccessHttp.id) {
                         ObserverMgr.dispatchMsg(msgStr, msgData);
@@ -40,6 +39,7 @@ module.exports = {
                     return ObserverMgr.dispatchMsg(GameMsgGlobal.Net.MsgErr, result);
                 }
                 console.log('[Http] 缺少code字段');
+                return;
             }
             return;
         }
@@ -52,13 +52,13 @@ module.exports = {
         let url = GameNetCfg.getHttpUrl();
         this._showSendData(msg, data);
         let str = '?';
-        let sendData = {
-            msgId: msg.id,
-            data: data
-        };
-        for (const key in sendData) {
-            if (sendData.hasOwnProperty(key)) {
-                const element = sendData[key];
+        console.log('data: ', data);
+        let msgId = msg.id;
+        data.msgId = msgId;
+        console.log('data: ', data);
+        for (const key in data) {
+            if (data.hasOwnProperty(key)) {
+                const element = data[key];
                 if (str !== '?') {
                     str += '&';
                 }
@@ -66,6 +66,7 @@ module.exports = {
             }
         }
         let path = msg.msg;
+        console.log('str: ', str);
         let requestUrl = url + '/' + path + encodeURI(str);
         console.log('requestUrl: ', requestUrl);
         xhr.open('GET', requestUrl, true);
