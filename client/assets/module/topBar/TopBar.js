@@ -1,6 +1,7 @@
 let Observer = require('Observer');
 let GameData = require('GameData');
 let Util = require('Util');
+let UIMgr = require('UIMgr');
 
 cc.Class({
     extends: Observer,
@@ -36,6 +37,11 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        medalPre: {
+            displayName: 'medalPre',
+            default: null,
+            type: cc.Prefab
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -62,6 +68,9 @@ cc.Class({
     },
 
     onBtnClickToMedal() {
-
+        UIMgr.createPrefab(this.medalPre, (root, ui) => {
+            this.node.parent.getChildByName('uiNode').addChild(root);
+        });
+        Util.reZOrderToTop(this.node);
     }
 });

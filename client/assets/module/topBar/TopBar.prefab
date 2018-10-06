@@ -1628,6 +1628,9 @@
     },
     "lblUserLevel": {
       "__id__": 12
+    },
+    "medalPre": {
+      "__uuid__": "607bfdf2-257f-4c67-803c-db6b513489ba"
     }
   },
   {
