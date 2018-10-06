@@ -1,5 +1,6 @@
 let fs = require('fs');
 let path = require('path')
+let dayjs = require('../node_modules/dayjs')
 let jsonFilePath = path.join(__dirname, '../json/boatData.json');
 
 module.exports = {
@@ -13,7 +14,13 @@ module.exports = {
         return jsonData;
     },
     data: null,
+    lastLogin: null,
+    firstLogin: false,
     initGameData() {
         this.data = JSON.parse(this.readJsonFile());
+    },
+    initLastLogin() {
+        this.lastLogin = dayjs();
+        this.firstLogin = true;
     }
 }

@@ -2,8 +2,11 @@
 const mongoose = require('mongoose');
 
 //工具类引用
-const util = require('../utils/util');
-const dayjs = require('../node_modules/dayjs');
+// const util = require('../utils/util');
+// const dayjs = require('../node_modules/dayjs');
+const moment = require('../node_modules/moment');
+const gameData = require('../gameData/gameData');
+
 
 let Schema = mongoose.Schema;
 
@@ -14,6 +17,9 @@ let userSchema = new Schema({
     medal: Number,
     historyGold: Number,
     level: Number,
+    lastLoginTime: Date,
+    curLoginTime: Date,
+    loginTimes: Number
 });
 
 let sevenDaySchema = new Schema({
@@ -38,6 +44,11 @@ function resetSevenDay(userId) {
         lastLoginTime: lastLoginTime
     };
     return data;
+}
+
+function isSameDay(day1, day2) {
+    let isSameDay = day1.isSame(day2, 'day');
+    return isSameDay;
 }
 
 module.exports = {
@@ -95,18 +106,42 @@ module.exports = {
                         console.error('err: ', err);
                         return;
                     }
+                    let day1 = moment(docs[0].curLoginTime);
+                    let day2 = moment(docs[0].lastLoginTime);
+                    docs[0].curLoginTime = moment().toDate(); //更新当前时间
+
+                    if (isSameDay(day1, day2)) {
+                        docs[0].loginTimes++;
+                    } else {
+                        docs[0].loginTimes = 1;
+                    }
                     if (cb) {
                         cb(docs[0]);
                     }
+                    docs[0].lastLoginTime = moment().toDate(); //更新上次登录时间
+                    User.updateOne({
+                        userId: userId
+                    }, docs[0], (err, raw) => {
+                        if (err) {
+                            console.error('err: ', err);
+                            return;
+                        }
+                        console.log('====raw====: ', raw);
+                    });
                 });
             } else {
+
+                //创建账号
                 let data = {
                     userId: userId,
                     gold: 2000,
                     historyGold: 2000,
                     medal: 0,
                     diamond: 0,
-                    level: 0
+                    level: 0,
+                    lastLoginTime: moment().toDate(),
+                    curLoginTime: moment().toDate(),
+                    loginTimes: 1
                 };
                 User.create(data, (err, docs) => {
                     if (err) {
@@ -145,8 +180,8 @@ module.exports = {
                 return;
             }
             if (cb) {
-                let lastTime = dayjs(docs.lastLoginTime);
-                let curTime = dayjs();
+                let lastTime = moment(docs.lastLoginTime);
+                let curTime = moment();
                 let diffDay = curTime.diff(lastTime, 'day');
                 if (diffDay > 1) {
                     data = resetSevenDay(condition.userId);

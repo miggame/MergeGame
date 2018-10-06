@@ -45,7 +45,7 @@ MergeGame服务端接口
         msgId:2002,
         errcode:0,
         errmsg:'ok',
-        data:[]
+        data:[2, 0, 0, 0, 0, 0, 0] 
     }
 
 

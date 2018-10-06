@@ -1,7 +1,6 @@
 let express = require('express');
 let app = express();
 let db = require('../db/db');
-
 let gameData = require('../gameData/gameData');
 
 
