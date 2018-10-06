@@ -7,6 +7,10 @@ window.GameMsgHttp = {
         SevenDay: {
             id: 2001,
             msg: 'sevenDay'
+        },
+        UpdateSevenDay: {
+            id: 2002,
+            msg: 'updateSevenDay'
         }
     },
     getMsgById(id) {

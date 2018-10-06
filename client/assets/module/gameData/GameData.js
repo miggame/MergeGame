@@ -8,7 +8,8 @@ module.exports = {
         medal: 0,
         gold: 0,
         historyGold: 0,
-        level: 0
+        level: 0,
+        loginTimes: 1
     },
 
     initPlayerInfo(data) {
@@ -28,6 +29,7 @@ module.exports = {
             this.playerInfo.diamond = data.diamond;
             this.playerInfo.historyGold = data.historyGold;
             this.playerInfo.level = data.level;
+            this.playerInfo.loginTimes = data.loginTimes;
         }
     },
 
@@ -39,5 +41,6 @@ module.exports = {
         this.playerInfo.historyGold = 0;
         this.playerInfo.medal = 0;
         this.playerInfo.level = 0;
+        this.playerInfo.loginTimes = 1;
     }
 };

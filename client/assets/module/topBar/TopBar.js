@@ -1,5 +1,6 @@
 let Observer = require('Observer');
 let GameData = require('GameData');
+let Util = require('Util');
 
 cc.Class({
     extends: Observer,
@@ -55,8 +56,12 @@ cc.Class({
 
     // update (dt) {},
     refreshView() {
-        this.lblUserMedal.string = GameData.playerInfo.medal;
-        this.lblUserDiamond.string = GameData.playerInfo.diamond;
-        this.lblUserLevel.string = GameData.playerInfo.level;
+        this.lblUserMedal.string = Util.numberFormat(GameData.playerInfo.medal);
+        this.lblUserDiamond.string = Util.numberFormat(GameData.playerInfo.diamond);
+        this.lblUserLevel.string = Util.numberFormat(GameData.playerInfo.level);
+    },
+
+    onBtnClickToMedal() {
+
     }
 });

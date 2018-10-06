@@ -53,7 +53,12 @@ module.exports = {
         }
         console.log('[UIMgr] 缺少参数');
     },
-
+    /*
+    * 使用实例:
+    * UIMgr.createPrefab(this.userInfoLayer, function (root, ui) {
+            this.uiNode.addChild(root);
+        }.bind(this));
+    * */
     createPrefab(UIPrefab, createCallBack) {
         if (!UIPrefab) {
             console.log('[UIMgr] 无法创建Prefab: ', UIPrefab);

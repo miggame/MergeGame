@@ -15,4 +15,9 @@ module.exports = {
     setStorage(str, obj) {
         cc.sys.localStorage.setItem(str, JSON.stringify(obj));
     },
+
+    //格式化数字
+    numberFormat(number) {
+        return numeral(number).format('0a').toUpperCase();
+    }
 };
