@@ -55,7 +55,7 @@ module.exports = {
         });
     },
 
-    isAccountExist(userId, cb) {
+    isAccountExist(userId, cb) { //判断账号是否已存在
         let condition = {
             userId: userId
         };
@@ -121,7 +121,7 @@ module.exports = {
         });
     },
 
-    getSevenDay(userId, cb) {
+    getSevenDay(userId, cb) { //获取七日登录
         let condition = {
             userId: userId
         };
@@ -182,5 +182,37 @@ module.exports = {
             }
 
         });
+    },
+
+    updateSevenDay(userId, index, cb) {
+        let condition = {
+            userId: userId
+        };
+        SevenDay.findOne(condition, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                return;
+            }
+            if (docs === null) {
+                console.log('传参数有误');
+                if (cb) {
+                    cb(null);
+                    return;
+                }
+            }
+            let sevenDay = docs.sevenDay;
+            sevenDay[index] = 2;
+            SevenDay.updateOne(condition, {
+                sevenDay: sevenDay
+            }, (err, raw) => {
+                if (err) {
+                    console.error('err: ', err);
+                    return;
+                }
+                if (cb) {
+                    cb(sevenDay);
+                }
+            });
+        })
     }
 }
