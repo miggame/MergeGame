@@ -1,5 +1,6 @@
 let Observer = require('Observer');
 let UIMgr = require('UIMgr');
+let GameData = require('GameData');
 
 cc.Class({
     extends: Observer,
@@ -27,6 +28,7 @@ cc.Class({
     },
     onLoad() {
         this._initMsg();
+        this.initView();
     },
 
     start() {
@@ -34,10 +36,9 @@ cc.Class({
     },
 
     // update (dt) {},
-    initView(data) {
-        this._data = data;
-        let sevenDayReward = data.sevenDayReward;
-        let sevenDay = data.sevenDay;
+    initView() {
+        let sevenDayReward = GameData.playerInfo.gameData.sevenDay;
+        let sevenDay = GameData.playerInfo.sevenDay;
         for (const key in sevenDayReward) {
             if (sevenDayReward.hasOwnProperty(key)) {
                 const element = sevenDayReward[key];

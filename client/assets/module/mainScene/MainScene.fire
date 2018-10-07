@@ -69,16 +69,19 @@
       },
       {
         "__id__": 45
+      },
+      {
+        "__id__": 47
       }
     ],
     "_tag": -1,
     "_active": true,
     "_components": [
       {
-        "__id__": 46
+        "__id__": 48
       },
       {
-        "__id__": 47
+        "__id__": 49
       }
     ],
     "_prefab": null,
@@ -1760,6 +1763,39 @@
   },
   {
     "__type__": "cc.Node",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 2
+    },
+    "_id": "9aJg3uK7JEzobBODXkU2k5",
+    "_prefab": {
+      "__id__": 46
+    },
+    "_name": "UserGold",
+    "_active": true,
+    "_position": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 500
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_localZOrder": 0,
+    "_globalZOrder": 0
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 45
+    },
+    "asset": {
+      "__uuid__": "9bd4751f-194b-45d0-8a92-b58ffae65844"
+    },
+    "fileId": "9aJg3uK7JEzobBODXkU2k5",
+    "sync": true
+  },
+  {
+    "__type__": "cc.Node",
     "_name": "uiNode",
     "_objFlags": 0,
     "_parent": {
@@ -1834,7 +1870,7 @@
       "__uuid__": "95cee4cc-e822-4e4e-a0d5-5cf6bbea720f"
     },
     "uiNode": {
-      "__id__": 45
+      "__id__": 47
     },
     "sevenDayPre": {
       "__uuid__": "266d5b4d-3b15-4347-90c1-732df8de8335"

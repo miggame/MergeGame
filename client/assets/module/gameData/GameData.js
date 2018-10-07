@@ -9,12 +9,16 @@ module.exports = {
         gold: 0,
         historyGold: 0,
         level: 0,
-        loginTimes: 1
+        loginTimes: 1,
+        sevenDay: [1, 0, 0, 0, 0, 0, 0],
+        sumDay: 1,
+        gameData: null
     },
 
     initPlayerInfo(data) {
         if (data === undefined) {
             this.resetPlayerInfo();
+            this.resetGameData();
             let userId = Util.getStorage('UserId');
             if (userId === null || userId === undefined) {
                 userId = dayjs().unix();
@@ -30,6 +34,9 @@ module.exports = {
             this.playerInfo.historyGold = data.historyGold;
             this.playerInfo.level = data.level;
             this.playerInfo.loginTimes = data.loginTimes;
+            this.playerInfo.sevenDay = data.sevenDay;
+            this.playerInfo.sumDay = data.sumDay;
+            this.playerInfo.gameData = data.gameData;
         }
     },
 
@@ -42,6 +49,12 @@ module.exports = {
         this.playerInfo.medal = 0;
         this.playerInfo.level = 0;
         this.playerInfo.loginTimes = 1;
+        this.playerInfo.sevenDay = [1, 0, 0, 0, 0, 0, 0];
+        this.playerInfo.gameData = null;
+    },
+
+    resetGameData() {
+        this.gameData = null;
     },
 
     initGameDataEvent() {
@@ -51,6 +64,15 @@ module.exports = {
             if (data !== null) {
                 this.playerInfo.gold = data.gold;
                 this.playerInfo.medal = data.medal;
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.UpdateUserinfo, this.playerInfo);
+            }
+        }, this);
+
+        //领取七日登陆奖励
+        ObserverMgr.addEventListener(GameMsgHttp.Msg.UpdateSevenDay.msg, (msg, data) => {
+            if (data !== null) {
+                this.playerInfo.gold = data.gold;
+                this.playerInfo.diamond = data.diamond;
                 ObserverMgr.dispatchMsg(GameLocalMsg.Msg.UpdateUserinfo, this.playerInfo);
             }
         }, this)

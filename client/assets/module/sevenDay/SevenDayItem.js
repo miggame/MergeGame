@@ -60,8 +60,9 @@ cc.Class({
     },
     _onMsg(msg, data) {
         if (msg === GameMsgHttp.Msg.UpdateSevenDay.msg) {
-            if (this._status !== data[this._index]) {
-                this._status = data[this._index];
+
+            if (this._status !== data.sevenDay[this._index]) {
+                this._status = data.sevenDay[this._index];
                 this._refresh(this._status);
             }
         }
@@ -75,7 +76,7 @@ cc.Class({
     },
 
     // update (dt) {},
-    initView(data, status, index) { //index从1开始,status:0未解锁，1已解锁，2已领取
+    initView(data, status, index) { //index从0开始,status:0未解锁，1已解锁，2已领取
         this._data = data;
         this._status = status;
         this._index = index;

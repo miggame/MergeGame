@@ -3,7 +3,7 @@ let GameData = require('GameData');
 let Util = require('Util');
 let NetHttpMgr = require('NetHttpMgr');
 let Observer = require('Observer');
-
+let ObserverMgr = require('ObserverMgr');
 cc.Class({
     extends: Observer,
 
@@ -74,6 +74,7 @@ cc.Class({
     },
 
     onBtnClickToClose() {
+        ObserverMgr.dispatchMsg(GameLocalMsg.Msg.ResetTopBar, true);
         UIMgr.destroyUI(this);
     },
 
@@ -109,6 +110,20 @@ cc.Class({
             medal: this._count
         };
         NetHttpMgr.quest(GameMsgHttp.Msg.ExchangeMedal, sendData);
+    },
+
+    onEditBoxToChanged() {
+        this._count = parseInt(this.editBox.string);
+        if (this._count < this._min) {
+            this._count = this._min;
+            this.editBox.string = this._count;
+        }
+        this._getMax();
+        if (this._count > this._max) {
+            this._count = this._max;
+            this.editBox.string = this._count;
+        }
+        this._refreshCost();
     },
 
     _getMax() {

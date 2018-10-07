@@ -31,21 +31,15 @@ cc.Class({
         ];
     },
     _onMsg(msg, data) {
-        if (msg === GameMsgHttp.Msg.SevenDay.msg) {
-            UIMgr.createPrefab(this.sevenDayPre, (root, ui) => {
-                this.uiNode.addChild(root);
-                ui.getComponent('SevenDay').initView(data);
-            });
-        }
+
     },
     onLoad() {
         this._initMsg();
         if (GameData.playerInfo.loginTimes === 1) {
             //七日登陆
-            let sendData = {
-                userId: GameData.playerInfo.userId
-            };
-            NetHttpMgr.quest(GameMsgHttp.Msg.SevenDay, sendData);
+            UIMgr.createPrefab(this.sevenDayPre, (root, ui) => {
+                this.uiNode.addChild(root);
+            });
             return;
         }
 
@@ -58,9 +52,9 @@ cc.Class({
     // update (dt) {},
 
     onBtnClickToSevenDay() {
-        let sendData = {
-            userId: GameData.playerInfo.userId
-        };
-        NetHttpMgr.quest(GameMsgHttp.Msg.SevenDay, sendData);
+        //七日登陆
+        UIMgr.createPrefab(this.sevenDayPre, (root, ui) => {
+            this.uiNode.addChild(root);
+        });
     },
 });

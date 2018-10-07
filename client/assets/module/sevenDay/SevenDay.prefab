@@ -49,10 +49,13 @@
     "_components": [
       {
         "__id__": 186
+      },
+      {
+        "__id__": 187
       }
     ],
     "_prefab": {
-      "__id__": 187
+      "__id__": 188
     },
     "_id": "",
     "_opacity": 255,
@@ -5862,6 +5865,15 @@
     "sevenDayItemPre": {
       "__uuid__": "c4ab3fe1-40b6-4d3f-be7d-ff7f19d6c68b"
     }
+  },
+  {
+    "__type__": "f2494mn7RtIJYiXUu9+vdK1",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true
   },
   {
     "__type__": "cc.PrefabInfo",
