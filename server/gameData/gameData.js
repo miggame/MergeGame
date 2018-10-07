@@ -14,13 +14,8 @@ module.exports = {
         return jsonData;
     },
     data: null,
-    lastLogin: null,
-    firstLogin: false,
+
     initGameData() {
         this.data = JSON.parse(this.readJsonFile());
     },
-    initLastLogin() {
-        this.lastLogin = dayjs();
-        this.firstLogin = true;
-    }
 }

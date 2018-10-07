@@ -19,18 +19,21 @@ let userSchema = new Schema({
     level: Number,
     lastLoginTime: Date,
     curLoginTime: Date,
-    loginTimes: Number
-});
-
-let sevenDaySchema = new Schema({
-    userId: String,
+    loginTimes: Number,
     sevenDay: Array,
     sumDay: Number,
-    lastLoginTime: Date
+    gameData: Map
 });
 
+// let sevenDaySchema = new Schema({
+//     userId: String,
+//     sevenDay: Array,
+//     sumDay: Number,
+//     lastLoginTime: Date
+// });
+
 let User = mongoose.model('User', userSchema);
-let SevenDay = mongoose.model('SevenDay', sevenDaySchema);
+// let SevenDay = mongoose.model('SevenDay', sevenDaySchema);
 
 //通用方法
 function resetSevenDay(userId) {
@@ -49,6 +52,10 @@ function resetSevenDay(userId) {
 function isSameDay(day1, day2) {
     let isSameDay = day1.isSame(day2, 'day');
     return isSameDay;
+}
+
+function diffDay(day1, day2) {
+    return day1.diff(day2, 'day');
 }
 
 module.exports = {
@@ -110,11 +117,25 @@ module.exports = {
                     let day2 = moment(docs[0].lastLoginTime);
                     docs[0].curLoginTime = moment().toDate(); //更新当前时间
 
-                    if (isSameDay(day1, day2)) {
+                    let diff = diffDay(day1, day2);
+                    if (diff === 0) {
                         docs[0].loginTimes++;
-                    } else {
+                    } else if (diff === 1) {
                         docs[0].loginTimes = 1;
+                        docs[0].sumDay++;
+                        if (docs[0].sumDay > 7) {
+                            docs[0].sumDay = 1;
+                        }
+                    } else if (diff > 1) {
+                        docs[0].loginTimes = 1;
+                        docs[0].sumDay = 1;
                     }
+
+                    // if (isSameDay(day1, day2)) {
+                    //     docs[0].loginTimes++;
+                    // } else {
+                    //     docs[0].loginTimes = 1;
+                    // }
                     if (cb) {
                         cb(docs[0]);
                     }
@@ -141,7 +162,10 @@ module.exports = {
                     level: 0,
                     lastLoginTime: moment().toDate(),
                     curLoginTime: moment().toDate(),
-                    loginTimes: 1
+                    loginTimes: 1,
+                    sevenDay: [1, 0, 0, 0, 0, 0, 0],
+                    sumDay: 1,
+                    gameData: gameData.data
                 };
                 User.create(data, (err, docs) => {
                     if (err) {
@@ -156,74 +180,11 @@ module.exports = {
         });
     },
 
-    getSevenDay(userId, cb) { //获取七日登录
-        let condition = {
-            userId: userId
-        };
-        SevenDay.findOne(condition, (err, docs) => {
-            if (err) {
-                console.error('err: ', err);
-                return;
-            }
-            let data = null;
-            if (docs === null) {
-                data = resetSevenDay(condition.userId);
-                SevenDay.create(data, (err, docs) => {
-                    if (err) {
-                        console.error('err: ', err);
-                        return;
-                    }
-                    if (cb) {
-                        cb(data);
-                    }
-                });
-                return;
-            }
-            if (cb) {
-                let lastTime = moment(docs.lastLoginTime);
-                let curTime = moment();
-                let diffDay = curTime.diff(lastTime, 'day');
-                if (diffDay > 1) {
-                    data = resetSevenDay(condition.userId);
-                } else if (diffDay === 0) {
-                    if (cb) {
-                        cb(docs);
-                        return;
-                    }
-                } else if (diffDay === 1) {
-                    docs.sumDay++;
-                    if (docs.sumDay > 7) {
-                        data = resetSevenDay(condition.userId);
-                    } else {
-                        for (let i = 0; i < docs.sevenDay.length; ++i) {
-                            if (docs.sevenDay[i] === 0) {
-                                docs.sevenDay[i] = 1;
-                                break;
-                            }
-                        }
-                        data = docs;
-                    }
-                }
-                SevenDay.updateOne(condition, data, (err, raw) => {
-                    if (err) {
-                        console.error('err: ', err);
-                        return;
-                    }
-                    console.log('====raw====: ', raw);
-                    if (cb) {
-                        cb(data);
-                    }
-                });
-            }
-
-        });
-    },
-
     updateSevenDay(userId, index, cb) {
         let condition = {
             userId: userId
         };
-        SevenDay.findOne(condition, (err, docs) => {
+        User.findOne(condition, (err, docs) => {
             if (err) {
                 console.error('err: ', err);
                 return;
@@ -235,20 +196,34 @@ module.exports = {
                     return;
                 }
             }
-            let sevenDay = docs.sevenDay;
-            sevenDay[index] = 2;
-            SevenDay.updateOne(condition, {
-                sevenDay: sevenDay
-            }, (err, raw) => {
+
+            docs.sevenDay[index] = 2;
+            let indexOfGameDataSevenDay = parseInt(index) + 1;
+
+            let sevenDayOfGameData = docs.gameData.get('sevenDay');
+            if (sevenDayOfGameData[indexOfGameDataSevenDay].goldReward !== 0) {
+                docs.gold += sevenDayOfGameData[indexOfGameDataSevenDay].goldReward;
+            }
+            if (sevenDayOfGameData[indexOfGameDataSevenDay].diamondReward !== 0) {
+                docs.diamond += sevenDayOfGameData[indexOfGameDataSevenDay].diamondReward;
+            }
+
+            let updateData = {
+                sevenDay: docs.sevenDay,
+                gold: docs.gold,
+                diamond: docs.diamond
+            }
+
+            User.updateOne(condition, updateData, (err, raw) => {
                 if (err) {
                     console.error('err: ', err);
                     return;
                 }
                 if (cb) {
-                    cb(sevenDay);
+                    cb(updateData);
                 }
             });
-        })
+        });
     },
 
     exchangeMedal(userId, gold, medal, cb) {
