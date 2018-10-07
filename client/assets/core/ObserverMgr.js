@@ -22,7 +22,10 @@ module.exports = {
                 return;
             }
         }
-        this.obsArray[msg].push({func: func, ob: ob});
+        this.obsArray[msg].push({
+            func: func,
+            ob: ob
+        });
     },
     // 取消注册事件
     removeEventListener: function (msg, func, ob) {
@@ -33,7 +36,7 @@ module.exports = {
                 let msgCBItem = msgCBArray[i];
                 let itemFunc = msgCBItem['func'];
                 let itemOb = msgCBItem['ob'];
-                if (func === itemFunc && ob === itemOb) {// 从消息队列里面移除msg回调
+                if (func === itemFunc && ob === itemOb) { // 从消息队列里面移除msg回调
                     msgCBArray.splice(i, 1);
                     b = true;
                 } else {
@@ -45,7 +48,7 @@ module.exports = {
     },
     // 移除该作用域的所有事件
     removeEventListenerWithObject: function (ob) {
-        for (let k in this.obsArray) {// [msg:[{func:func, ob:ob}]]
+        for (let k in this.obsArray) { // [msg:[{func:func, ob:ob}]]
             let msgCBArray = this.obsArray[k]; // [{func: func, ob: ob}]
             for (let i = 0; i < msgCBArray.length;) {
                 // {func: func, ob: ob}

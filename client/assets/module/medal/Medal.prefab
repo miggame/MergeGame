@@ -41,18 +41,18 @@
         "__id__": 92
       },
       {
-        "__id__": 99
+        "__id__": 100
       }
     ],
     "_tag": -1,
     "_active": true,
     "_components": [
       {
-        "__id__": 105
+        "__id__": 106
       }
     ],
     "_prefab": {
-      "__id__": 106
+      "__id__": 107
     },
     "_id": "",
     "_opacity": 255,
@@ -2929,7 +2929,7 @@
       }
     ],
     "_prefab": {
-      "__id__": 98
+      "__id__": 99
     },
     "_id": "",
     "_opacity": 255,
@@ -3107,7 +3107,11 @@
     },
     "duration": 0.1,
     "zoomScale": 1.2,
-    "clickEvents": [],
+    "clickEvents": [
+      {
+        "__id__": 98
+      }
+    ],
     "_N$interactable": true,
     "_N$enableAutoGrayEffect": true,
     "_N$normalColor": {
@@ -3135,6 +3139,15 @@
     }
   },
   {
+    "__type__": "cc.ClickEvent",
+    "target": {
+      "__id__": 1
+    },
+    "component": "Medal",
+    "handler": "onBtnClickToExchange",
+    "customEventData": ""
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -3157,17 +3170,17 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 100
-      },
-      {
         "__id__": 101
       },
       {
         "__id__": 102
+      },
+      {
+        "__id__": 103
       }
     ],
     "_prefab": {
-      "__id__": 104
+      "__id__": 105
     },
     "_id": "",
     "_opacity": 255,
@@ -3210,7 +3223,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 99
+      "__id__": 100
     },
     "_enabled": true,
     "_useOriginalSize": false,
@@ -3234,7 +3247,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 99
+      "__id__": 100
     },
     "_enabled": true
   },
@@ -3243,7 +3256,7 @@
     "_name": "",
     "_objFlags": 0,
     "node": {
-      "__id__": 99
+      "__id__": 100
     },
     "_enabled": true,
     "transition": 0,
@@ -3265,7 +3278,7 @@
     "zoomScale": 1.2,
     "clickEvents": [
       {
-        "__id__": 103
+        "__id__": 104
       }
     ],
     "_N$interactable": true,
@@ -3291,7 +3304,7 @@
     "hoverSprite": null,
     "_N$disabledSprite": null,
     "_N$target": {
-      "__id__": 99
+      "__id__": 100
     }
   },
   {

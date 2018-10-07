@@ -1,9 +1,11 @@
 let UIMgr = require('UIMgr');
 let GameData = require('GameData');
 let Util = require('Util');
+let NetHttpMgr = require('NetHttpMgr');
+let Observer = require('Observer');
 
 cc.Class({
-    extends: cc.Component,
+    extends: Observer,
 
     properties: {
         _count: null,
@@ -34,8 +36,18 @@ cc.Class({
     },
 
     // LIFE-CYCLE CALLBACKS:
-
+    _getMsgList() {
+        return [
+            GameMsgHttp.Msg.ExchangeMedal.msg
+        ];
+    },
+    _onMsg(msg, data) {
+        if (msg === GameMsgHttp.Msg.ExchangeMedal.msg) {
+            this._refreshCost(true);
+        }
+    },
     onLoad() {
+        this._initMsg();
         this._refreshCost(true);
     },
 
@@ -46,8 +58,7 @@ cc.Class({
     // update (dt) {},
     _refreshCost(flag) {
         this._divisor = 10000;
-        let gold = GameData.playerInfo.gold;
-        this._max = Math.round(gold / this._divisor);
+        this._getMax();
         if (this._max <= this._min) {
             this._max = this._min;
         }
@@ -59,7 +70,7 @@ cc.Class({
         this.editBox.string = this._count;
         this.lblCostGold.string = Util.numberFormat(this._goldCost);
 
-        this.btnExchange.interactable = gold >= this._goldCost;
+        this.btnExchange.interactable = GameData.playerInfo.gold >= this._goldCost;
     },
 
     onBtnClickToClose() {
@@ -74,6 +85,7 @@ cc.Class({
         this._refreshCost();
     },
     onBtnClickToPlus() {
+        this._getMax();
         this._count++;
         if (this._count >= this._max) {
             this._count = this._max;
@@ -85,7 +97,22 @@ cc.Class({
         this._refreshCost();
     },
     onBtnClickToMax() {
+        this._getMax();
         this._count = this._max;
         this._refreshCost();
+    },
+
+    onBtnClickToExchange() { //传值有正负之分
+        let sendData = {
+            userId: GameData.playerInfo.userId,
+            gold: -this._goldCost,
+            medal: this._count
+        };
+        NetHttpMgr.quest(GameMsgHttp.Msg.ExchangeMedal, sendData);
+    },
+
+    _getMax() {
+        let gold = GameData.playerInfo.gold;
+        this._max = Math.round(gold / this._divisor);
     }
 });

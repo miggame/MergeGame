@@ -11,6 +11,10 @@ window.GameMsgHttp = {
         UpdateSevenDay: {
             id: 2002,
             msg: 'updateSevenDay'
+        },
+        ExchangeMedal: {
+            id: 3001,
+            msg: 'exchangeMedal'
         }
     },
     getMsgById(id) {

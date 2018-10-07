@@ -34,6 +34,7 @@ cc.Class({
     _onMsg(msg, data) {
         if (msg === GameMsgHttp.Msg.Register.msg) {
             GameData.initPlayerInfo(data);
+            GameData.initGameDataEvent();
             cc.director.loadScene('MainScene');
         }
     },

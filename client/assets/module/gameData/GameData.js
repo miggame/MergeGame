@@ -1,5 +1,5 @@
 let Util = require('Util');
-
+let ObserverMgr = require('ObserverMgr');
 module.exports = {
     playerInfo: {
         userId: '',
@@ -42,5 +42,17 @@ module.exports = {
         this.playerInfo.medal = 0;
         this.playerInfo.level = 0;
         this.playerInfo.loginTimes = 1;
+    },
+
+    initGameDataEvent() {
+        ObserverMgr.removeEventListenerWithObject(this);
+        //监听勋章兑换
+        ObserverMgr.addEventListener(GameMsgHttp.Msg.ExchangeMedal.msg, (msg, data) => {
+            if (data !== null) {
+                this.playerInfo.gold = data.gold;
+                this.playerInfo.medal = data.medal;
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.UpdateUserinfo, this.playerInfo);
+            }
+        }, this)
     }
 };

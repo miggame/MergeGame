@@ -46,10 +46,14 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
     _getMsgList() {
-        return [];
+        return [
+            GameLocalMsg.Msg.UpdateUserinfo
+        ];
     },
     _onMsg(msg, data) {
-
+        if (msg === GameLocalMsg.Msg.UpdateUserinfo) {
+            this.refreshView();
+        }
     },
     onLoad() {
         this._initMsg();
