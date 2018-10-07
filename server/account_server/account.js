@@ -96,6 +96,31 @@ app.get('/updateSevenDay', (req, res) => {
     });
 });
 
+//兑换勋章
+app.get('/exchangeMedal', (req, res) => {
+    let reqData = req.query;
+    let userId = reqData.userId;
+    let gold = parseInt(reqData.gold);
+    let medal = parseInt(reqData.medal);
+    db.exchangeMedal(userId, gold, medal, (data) => {
+        let ret = {
+            msgId: 3001,
+            errcode: 0,
+            errmsg: 'ok',
+            data: data
+        };
+        if (data === null) {
+            ret = {
+                msgId: 3001,
+                errcode: 9004,
+                errmsg: 'interval error',
+                data: null
+            };
+        }
+        send(res, ret);
+    });
+});
+
 module.exports = {
     start(config) { //config对应account的配置
         app.listen(config.port);

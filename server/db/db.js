@@ -249,5 +249,36 @@ module.exports = {
                 }
             });
         })
+    },
+
+    exchangeMedal(userId, gold, medal, cb) {
+        let condition = {
+            userId: userId
+        };
+        User.findOne(condition, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                if (cb) {
+                    cb(null);
+                }
+                return;
+            }
+            console.log('====docs.gold====: ', typeof docs.gold);
+            console.log('====gold====: ', typeof gold);
+            docs.gold += gold;
+            docs.medal += medal;
+            User.updateOne(condition, docs, (err, raw) => {
+                if (err) {
+                    console.error('err: ', err);
+                    if (cb) {
+                        cb(null);
+                    }
+                    return;
+                }
+                if (cb) {
+                    cb(docs);
+                }
+            });
+        });
     }
 }

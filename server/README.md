@@ -49,3 +49,20 @@ MergeGame服务端接口
     }
 
 
+4.兑换勋章
+
+>接口：exchangeMedal
+
+>参数：{userId:'111', gold:100, medal:1} //gold, medal 有正负
+
+>返回：errcode:0成功
+
+    {
+        msgId:3001,
+        errcode:0,
+        errmsg:'ok',
+        data:{gold:100, medal:1}
+    }
+
+
+
