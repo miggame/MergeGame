@@ -1,6 +1,7 @@
 let Util = require('Util');
 let ObserverMgr = require('ObserverMgr');
 module.exports = {
+    parkColMax: 3,
     playerInfo: {
         userId: '',
         name: '',
@@ -12,7 +13,9 @@ module.exports = {
         loginTimes: 1,
         sevenDay: [1, 0, 0, 0, 0, 0, 0],
         sumDay: 1,
-        gameData: null
+        gameData: null,
+        parkArr: [],
+        way: 0
     },
 
     initPlayerInfo(data) {
@@ -37,6 +40,8 @@ module.exports = {
             this.playerInfo.sevenDay = data.sevenDay;
             this.playerInfo.sumDay = data.sumDay;
             this.playerInfo.gameData = data.gameData;
+            this.playerInfo.parkArr = data.parkArr;
+            this.playerInfo.way = data.way;
         }
     },
 
@@ -51,6 +56,8 @@ module.exports = {
         this.playerInfo.loginTimes = 1;
         this.playerInfo.sevenDay = [1, 0, 0, 0, 0, 0, 0];
         this.playerInfo.gameData = null;
+        this.playerInfo.parkArr = [];
+        this.playerInfo.way = 0;
     },
 
     resetGameData() {

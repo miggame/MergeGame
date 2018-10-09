@@ -22,7 +22,9 @@ let userSchema = new Schema({
     loginTimes: Number,
     sevenDay: Array,
     sumDay: Number,
-    gameData: Map
+    gameData: Map,
+    parkArr: Array,
+    way: Number
 });
 
 // let sevenDaySchema = new Schema({
@@ -56,6 +58,32 @@ function isSameDay(day1, day2) {
 
 function diffDay(day1, day2) {
     return day1.diff(day2, 'day');
+}
+
+function getPark(index) {
+    let parkArr = [];
+
+    let len = gameData.data.level[index].parking;
+    for (let i = 0; i < len; ++i) {
+        let data = {
+            index: i,
+            status: 0,
+            level: 0
+        };
+        parkArr.push(data);
+    }
+    let parkPlusData = {
+        index: len,
+        status: -1,
+        level: 0
+    };
+    parkArr.push(parkPlusData);
+    return parkArr;
+}
+
+function getWay(index) {
+    let way = gameData.data.level[index].way;
+    return way;
 }
 
 module.exports = {
@@ -151,7 +179,6 @@ module.exports = {
                     });
                 });
             } else {
-
                 //创建账号
                 let data = {
                     userId: userId,
@@ -165,8 +192,11 @@ module.exports = {
                     loginTimes: 1,
                     sevenDay: [1, 0, 0, 0, 0, 0, 0],
                     sumDay: 1,
-                    gameData: gameData.data
+                    gameData: gameData.data,
+                    parkArr: getPark(1),
+                    way: getWay(1)
                 };
+                console.log('====data====: ', data);
                 User.create(data, (err, docs) => {
                     if (err) {
                         console.error('err: ', err);

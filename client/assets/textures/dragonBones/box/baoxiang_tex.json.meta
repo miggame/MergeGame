@@ -1,0 +1,7 @@
+{
+  "ver": "1.0.0",
+  "uuid": "550a8a8c-d39e-450d-b956-c6165a2b1985",
+  "atlasJson": "{\"imagePath\":\"baoxiang_tex.png\",\"width\":115,\"height\":126,\"name\":\"baoxiang\",\"SubTexture\":[{\"width\":112,\"y\":73,\"height\":51,\"name\":\"宝箱/图层_2\",\"x\":1},{\"width\":112,\"y\":1,\"height\":70,\"name\":\"宝箱/图层_1\",\"x\":1}]}",
+  "texture": "73f5ae24-d920-4a9f-9740-3866bb0abf91",
+  "subMetas": {}
+}

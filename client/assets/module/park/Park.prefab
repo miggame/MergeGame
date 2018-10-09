@@ -50,8 +50,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 0,
-      "height": 0
+      "width": 137,
+      "height": 136
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -311,7 +311,10 @@
     "node": {
       "__id__": 1
     },
-    "_enabled": true
+    "_enabled": true,
+    "btnParkPlus": {
+      "__id__": 7
+    }
   },
   {
     "__type__": "cc.PrefabInfo",
