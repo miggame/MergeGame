@@ -75,7 +75,7 @@ cc.Class({
     },
 
     // update (dt) {},
-
+    //显示七日登录
     onBtnClickToSevenDay() {
         //七日登陆
         UIMgr.createPrefab(this.sevenDayPre, (root, ui) => {
@@ -94,7 +94,7 @@ cc.Class({
             parkPreNode.getComponent('Park').initView(data[i]);
         }
     },
-
+    //获取停船位坐标
     _getParkPosArr(data) {
         let len = data.length;
         let colMax = GameData.parkColMax;
@@ -114,5 +114,33 @@ cc.Class({
             }
         }
         return posArr;
+    },
+    //自动降落船只
+    _autoCreateBoat() {
+        this.schedule(this._createBoat, 5);
+    },
+    //获取空闲船位数组
+    _getEmptyParkArr() {
+        let emptyParkArr = [];
+        let parkArr = GameData.playerInfo.parkArr;
+        let len = parkArr.length;
+        for (let i = 0; i < len; ++i) {
+            if (parkArr[i].status === 0) emptyParkArr.push(parkArr[i]);
+        }
+        return emptyParkArr;
+    },
+    //判定是否有空船位
+    _isParkFull() {
+        return this._getEmptyParkArr().length === 0 ? true : false;
+    },
+    //创建船只
+    _createBoat() {
+        let parkArr = GameData.playerInfo.parkArr;
+        let len = parkArr.length;
+        for (let i = 0; i < len; ++i) {
+            if (parkArr[i].status === 0) {
+                break;
+            }
+        }
     }
 });
