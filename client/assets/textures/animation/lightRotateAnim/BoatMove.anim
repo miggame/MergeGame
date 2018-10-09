@@ -1,0 +1,117 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "BoatMove",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 1,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": "2",
+  "curveData": {
+    "props": {
+      "position": [
+        {
+          "frame": 0,
+          "value": [
+            -440,
+            0
+          ],
+          "motionPath": []
+        },
+        {
+          "frame": 0.08333333333333333,
+          "value": [
+            -440,
+            400
+          ],
+          "motionPath": [
+            [
+              3,
+              745,
+              -297,
+              735,
+              323,
+              745
+            ]
+          ]
+        },
+        {
+          "frame": 0.4166666666666667,
+          "value": [
+            440,
+            400
+          ],
+          "motionPath": []
+        },
+        {
+          "frame": 0.5,
+          "value": [
+            440,
+            0
+          ],
+          "motionPath": []
+        },
+        {
+          "frame": 0.5833333333333334,
+          "value": [
+            440,
+            -400
+          ],
+          "motionPath": [
+            [
+              10,
+              -738,
+              362,
+              -736,
+              -299,
+              -734
+            ]
+          ]
+        },
+        {
+          "frame": 0.9166666666666666,
+          "value": [
+            -440,
+            -400
+          ],
+          "motionPath": []
+        },
+        {
+          "frame": 1,
+          "value": [
+            -440,
+            0
+          ],
+          "motionPath": []
+        }
+      ],
+      "rotation": [
+        {
+          "frame": 0,
+          "value": -90
+        },
+        {
+          "frame": 0.08333333333333333,
+          "value": -90
+        },
+        {
+          "frame": 0.4166666666666667,
+          "value": 90
+        },
+        {
+          "frame": 0.5833333333333334,
+          "value": 90
+        },
+        {
+          "frame": 0.9166666666666666,
+          "value": 270
+        },
+        {
+          "frame": 1,
+          "value": 270
+        }
+      ]
+    }
+  },
+  "events": []
+}

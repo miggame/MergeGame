@@ -1,0 +1,30 @@
+{
+  "ver": "2.0.0",
+  "uuid": "b439bfac-bffc-4bbc-a117-c44723928f45",
+  "type": "sprite",
+  "wrapMode": "clamp",
+  "filterMode": "bilinear",
+  "subMetas": {
+    "parkPlus": {
+      "ver": "1.0.3",
+      "uuid": "494d236a-6685-45d6-82d7-c6a7ccc96047",
+      "rawTextureUuid": "b439bfac-bffc-4bbc-a117-c44723928f45",
+      "trimType": "auto",
+      "trimThreshold": 1,
+      "rotated": false,
+      "offsetX": 0,
+      "offsetY": 0,
+      "trimX": 0,
+      "trimY": 0,
+      "width": 137,
+      "height": 136,
+      "rawWidth": 137,
+      "rawHeight": 136,
+      "borderTop": 0,
+      "borderBottom": 0,
+      "borderLeft": 0,
+      "borderRight": 0,
+      "subMetas": {}
+    }
+  }
+}

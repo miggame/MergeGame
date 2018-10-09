@@ -22,6 +22,16 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        parkPre: {
+            displayName: 'parkPre',
+            default: null,
+            type: cc.Prefab
+        },
+        parkLayer: {
+            displayName: 'parkLayer',
+            default: null,
+            type: cc.Node
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -42,7 +52,23 @@ cc.Class({
             });
             return;
         }
-
+        let parkArr = [{
+                index: 0,
+                status: 0,
+                level: 0
+            },
+            {
+                index: 0,
+                status: 0,
+                level: 0
+            },
+            {
+                index: 0,
+                status: 0,
+                level: 0
+            },
+        ];
+        this._initPark(parkArr);
     },
 
     start() {
@@ -57,4 +83,27 @@ cc.Class({
             this.uiNode.addChild(root);
         });
     },
+    //初始化停船位
+    _initPark(data) {
+        let spaceX = 200;
+        let spaceY = 200;
+        let len = data.length;
+
+        let limit = 10;
+        let colMax = len < limit ? 2 : 3;
+        let rowMax = Math.ceil(len / colMax);
+        if (len < limit) {
+            for (let i = 0; i < len; ++i) {
+                let parkPre = cc.instantiate(this.parkPre);
+                this.parkLayer.addChild(parkPre);
+                let midX = Math.floor(colMax / 2);
+                let midY = Math.floor(rowMax / 2);
+                parkPre.x = (i - midX) * spaceX;
+                parkPre.y = (i - midY) * spaceY;
+            }
+        } else {
+
+        }
+
+    }
 });
