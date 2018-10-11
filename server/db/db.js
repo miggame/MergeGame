@@ -159,11 +159,6 @@ module.exports = {
                         docs[0].sumDay = 1;
                     }
 
-                    // if (isSameDay(day1, day2)) {
-                    //     docs[0].loginTimes++;
-                    // } else {
-                    //     docs[0].loginTimes = 1;
-                    // }
                     if (cb) {
                         cb(docs[0]);
                     }

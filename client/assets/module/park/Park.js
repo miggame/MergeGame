@@ -12,6 +12,7 @@ cc.Class({
     extends: cc.Component,
 
     properties: {
+        _data: null,
         btnParkPlus: {
             displayName: 'btnParkPlus',
             default: null,
@@ -29,6 +30,7 @@ cc.Class({
 
     // update (dt) {},
     initView(data) {
+        this._data = data;
         this.node.setLocalZOrder(data.index);
         this.btnParkPlus.node.active = data.status === -1;
     },

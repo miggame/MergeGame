@@ -1,6 +1,6 @@
 let Observer = require('Observer');
 cc.Class({
-    extends: cc.Component,
+    extends: Observer,
 
     properties: {
         _animState: null,
