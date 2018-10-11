@@ -164,7 +164,11 @@ cc.Class({
         boatPreNode.x = pos.x;
         boatPreNode.y = cc.view.getVisibleSize().height;
         let moveAct = cc.moveTo(0.5, pos).easing(cc.easeInOut(3.0));
-        let cbAct = cc.callFunc(this._updateParkStatus, this, randIndex);
+        let statusData = {
+            index: randIndex,
+            status: 1
+        };
+        let cbAct = cc.callFunc(this._updateParkStatus, this, statusData);
         boatPreNode.runAction(cc.sequence(moveAct, cbAct));
     },
     //获取具体索引的船位坐标
@@ -173,7 +177,7 @@ cc.Class({
         return parkPosArr[index];
     },
     //更新已有船位状态
-    _updateParkStatus(node, index) {
-        console.log('====index====: ', index);
+    _updateParkStatus(node, statusData) {
+        console.log('====statusData====: ', statusData);
     }
 });

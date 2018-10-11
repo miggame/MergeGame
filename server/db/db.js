@@ -280,5 +280,12 @@ module.exports = {
                 }
             });
         });
+    },
+
+    updateParkStatus(userId, index, status, cb) { //更新船位状态
+        let condition = {
+            userId: userId
+        };
+        db.findOne
     }
 }
