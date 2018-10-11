@@ -91,6 +91,14 @@ app.get('/exchangeMedal', (req, res) => {
     });
 });
 
+//船位状态更新（status:0空闲，1占有，2在跑道，3船位增加按钮
+app.get('/updateParkStatus', (req, res) => {
+    let reqData = req.query;
+    let index = reqData.index;
+    let status = reqData.status;
+
+})
+
 module.exports = {
     start(config) { //config对应account的配置
         app.listen(config.port);
