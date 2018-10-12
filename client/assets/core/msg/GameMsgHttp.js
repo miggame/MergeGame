@@ -15,7 +15,12 @@ window.GameMsgHttp = {
         ExchangeMedal: {
             id: 3001,
             msg: 'exchangeMedal'
+        },
+        UpdateParkStatus: {
+            id: 4001,
+            msg: 'updateParkStatus'
         }
+
     },
     getMsgById(id) {
         for (const key in this.Msg) {

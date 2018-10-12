@@ -94,10 +94,28 @@ app.get('/exchangeMedal', (req, res) => {
 //船位状态更新（status:0空闲，1占有，2在跑道，3船位增加按钮
 app.get('/updateParkStatus', (req, res) => {
     let reqData = req.query;
+    let userId = reqData.userId;
     let index = reqData.index;
     let status = reqData.status;
-
-})
+    db.updateParkStatus(userId, index, status, (data) => {
+        console.log('====data====: ', data);
+        let ret = {
+            msgId: 4001,
+            errcode: 0,
+            errmsg: 'ok',
+            data: data
+        };
+        if (data === null) {
+            ret = {
+                msgId: 4001,
+                errcode: 9005,
+                errmsg: 'interval error',
+                data: null
+            };
+        }
+        send(res, ret);
+    });
+});
 
 module.exports = {
     start(config) { //config对应account的配置

@@ -56,11 +56,16 @@ cc.Class({
     // LIFE-CYCLE CALLBACKS:
     _getMsgList() {
         return [
-            GameMsgHttp.Msg.SevenDay.msg
+            GameMsgHttp.Msg.SevenDay.msg,
+            GameMsgHttp.Msg.UpdateParkStatus.msg
         ];
     },
     _onMsg(msg, data) {
-
+        if (msg === GameMsgHttp.Msg.UpdateParkStatus.msg) {
+            console.log('====data====: ', data);
+            GameData.playerInfo.parkArr = data;
+            this._autoCreateBoat();
+        }
     },
     onLoad() {
         this._initMsg();
@@ -133,31 +138,39 @@ cc.Class({
     //自动降落船只
     _autoCreateBoat() {
         cc.log('1');
-        this.scheduleOnce(this._createBoat, 5);
+        this.scheduleOnce(this._dropBoat, 5);
     },
     //获取空闲船位数组
     _getEmptyParkArr() {
         let emptyParkArr = [];
         let parkArr = GameData.playerInfo.parkArr;
-        console.log('====parkArr====: ', parkArr);
         let len = parkArr.length;
         for (let i = 0; i < len; ++i) {
             if (parkArr[i].status === 0) emptyParkArr.push(parkArr[i]);
         }
         return emptyParkArr;
     },
+    //获取空闲船位索引数组
+    _getEmptyParkIndexArr() {
+        let emptyParkIndexArr = [];
+        let parkArr = GameData.playerInfo.parkArr;
+        let len = parkArr.length;
+        for (let i = 0; i < len; ++i) {
+            if (parkArr[i].status === 0) emptyParkIndexArr.push(parkArr[i].index);
+        }
+        return emptyParkIndexArr;
+    },
     //判定是否有空船位
     _isParkFull() {
         return this._getEmptyParkArr().length === 0 ? true : false;
     },
     //创建船只
-    _createBoat() {
-        cc.log('2');
+    _dropBoat() {
         if (this._isParkFull()) return;
-        cc.log('3');
-        let emptyParkArr = this._getEmptyParkArr();
-        let len = emptyParkArr.length;
-        let randIndex = Math.floor(cc.random0To1() * len);
+        let emptyParkIndexArr = this._getEmptyParkIndexArr();
+        let len = emptyParkIndexArr.length;
+
+        let randIndex = emptyParkIndexArr[(Math.floor(cc.random0To1() * len))];
         let pos = this._getParkPos(randIndex);
         let boatPreNode = cc.instantiate(this.boatPre);
         this.boatLayer.addChild(boatPreNode);
@@ -179,5 +192,11 @@ cc.Class({
     //更新已有船位状态
     _updateParkStatus(node, statusData) {
         console.log('====statusData====: ', statusData);
+        let sendData = {
+            userId: GameData.playerInfo.userId,
+            index: statusData.index,
+            status: statusData.status
+        };
+        NetHttpMgr.quest(GameMsgHttp.Msg.UpdateParkStatus, sendData);
     }
 });

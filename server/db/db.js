@@ -286,6 +286,29 @@ module.exports = {
         let condition = {
             userId: userId
         };
-        db.findOne
+
+        User.findOne(condition, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                if (cb) {
+                    cb(null)
+                };
+                return;
+            }
+            let parkArr = docs.parkArr;
+            parkArr[index].status = parseInt(status);
+            User.updateOne(condition, {
+                parkArr: parkArr
+            }, (err, raw) => {
+                if (err) {
+                    console.error('err: ', err);
+                    if (cb) cb(null);
+                    return;
+                }
+                if (cb) {
+                    cb(parkArr);
+                }
+            });
+        });
     }
 }
