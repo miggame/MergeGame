@@ -167,19 +167,22 @@ cc.Class({
     //创建船只
     _dropBoat() {
         if (this._isParkFull()) return;
+        let dropBoatLevel = this._getDropBoatLevel(GameData.playerInfo.maxOwnedBoatLevel);
+
         let emptyParkIndexArr = this._getEmptyParkIndexArr();
         let len = emptyParkIndexArr.length;
-
         let randIndex = emptyParkIndexArr[(Math.floor(cc.random0To1() * len))];
         let pos = this._getParkPos(randIndex);
         let boatPreNode = cc.instantiate(this.boatPre);
         this.boatLayer.addChild(boatPreNode);
+        boatPreNode.getComponent('Boat').initView(dropBoatLevel);
         boatPreNode.x = pos.x;
         boatPreNode.y = cc.view.getVisibleSize().height;
         let moveAct = cc.moveTo(0.5, pos).easing(cc.easeInOut(3.0));
         let statusData = {
             index: randIndex,
-            status: 1
+            status: 1,
+            level: dropBoatLevel
         };
         let cbAct = cc.callFunc(this._updateParkStatus, this, statusData);
         boatPreNode.runAction(cc.sequence(moveAct, cbAct));
@@ -195,8 +198,27 @@ cc.Class({
         let sendData = {
             userId: GameData.playerInfo.userId,
             index: statusData.index,
-            status: statusData.status
+            status: statusData.status,
+            level: statusData.level
         };
         NetHttpMgr.quest(GameMsgHttp.Msg.UpdateParkStatus, sendData);
+    },
+
+    //获取掉落船只的级别
+    _getDropBoatLevel(maxOwnedBoatLevel) {
+        let dropBoatLevel = 0;
+        if (maxOwnedBoatLevel === 0) {
+            dropBoatLevel = 1;
+            return dropBoatLevel;
+        }
+        let boatData = GameData.gameData.boatShop;
+        let giftBoat1 = boatData[maxOwnedBoatLevel].giftBoat1;
+        let giftBoat2 = boatData[maxOwnedBoatLevel].giftBoat2;
+        let chance1 = boatData[maxOwnedBoatLevel].chance1;
+        let chance2 = boatData[maxOwnedBoatLevel].chance2;
+        console.log('====giftBoat1====: ', giftBoat1);
+        console.log('====chance1====: ', chance1);
+        dropBoatLevel = Math.floor(cc.random0To1() * 100) < chance1 ? giftBoat1 : giftBoat2;
+        return dropBoatLevel;
     }
 });

@@ -73,4 +73,21 @@ MergeGame服务端接口
     }
 
 
+5.船位状态更新（status:0空闲，1占有，2在跑道，3船位增加按钮)
+
+
+>接口：updateParkStatus
+
+>参数：{userId:'111', index:1, level:1, status:1} 
+
+>返回：errcode:0成功
+
+    {
+        msgId:4001,
+        errcode:0,
+        errmsg:'ok',
+        data:[parkArr]
+    }
+
+
 

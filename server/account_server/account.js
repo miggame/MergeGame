@@ -97,7 +97,8 @@ app.get('/updateParkStatus', (req, res) => {
     let userId = reqData.userId;
     let index = reqData.index;
     let status = reqData.status;
-    db.updateParkStatus(userId, index, status, (data) => {
+    let level = reqData.level;
+    db.updateParkStatus(userId, index, status, level, (data) => {
         console.log('====data====: ', data);
         let ret = {
             msgId: 4001,

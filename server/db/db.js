@@ -17,6 +17,8 @@ let userSchema = new Schema({
     medal: Number,
     historyGold: Number,
     level: Number,
+    maxOwnedBoatLevel: Number,
+    maxBuyBoatLevel: Number,
     lastLoginTime: Date,
     curLoginTime: Date,
     loginTimes: Number,
@@ -182,6 +184,8 @@ module.exports = {
                     medal: 0,
                     diamond: 0,
                     level: 0,
+                    maxOwnedBoatLevel: 0,
+                    maxBuyBoatLevel: 0,
                     lastLoginTime: moment().toDate(),
                     curLoginTime: moment().toDate(),
                     loginTimes: 1,
@@ -282,7 +286,7 @@ module.exports = {
         });
     },
 
-    updateParkStatus(userId, index, status, cb) { //更新船位状态
+    updateParkStatus(userId, index, status, level, cb) { //更新船位状态
         let condition = {
             userId: userId
         };
@@ -297,6 +301,7 @@ module.exports = {
             }
             let parkArr = docs.parkArr;
             parkArr[index].status = parseInt(status);
+            parkArr[index].level = level;
             User.updateOne(condition, {
                 parkArr: parkArr
             }, (err, raw) => {

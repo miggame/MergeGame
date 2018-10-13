@@ -10,6 +10,8 @@ module.exports = {
         gold: 0,
         historyGold: 0,
         level: 0,
+        maxOwnedBoatLevel: 0,
+        maxBuyBoatLevel: 0,
         loginTimes: 1,
         sevenDay: [1, 0, 0, 0, 0, 0, 0],
         sumDay: 1,
@@ -36,6 +38,8 @@ module.exports = {
             this.playerInfo.diamond = data.diamond;
             this.playerInfo.historyGold = data.historyGold;
             this.playerInfo.level = data.level;
+            this.playerInfo.maxOwnedBoatLevel = data.maxOwnedBoatLevel;
+            this.playerInfo.maxBuyBoatLevel = data.maxBuyBoatLevel;
             this.playerInfo.loginTimes = data.loginTimes;
             this.playerInfo.sevenDay = data.sevenDay;
             this.playerInfo.sumDay = data.sumDay;
