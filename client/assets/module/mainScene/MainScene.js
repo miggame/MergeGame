@@ -140,7 +140,7 @@ cc.Class({
     //初始化船
     _initBoat(level, pos, status, index) {
         //判断船位上船只状态
-        if (status === -1) return;
+        if (status === -1 || status === 0) return;
 
         let boatPreNode = cc.instantiate(this.boatPre);
         this.boatLayer.addChild(boatPreNode);
