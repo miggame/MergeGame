@@ -51,6 +51,7 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
+        _boatTouchFlag: false
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -79,6 +80,9 @@ cc.Class({
 
         //倒计时落船
         this._autoCreateBoat();
+
+        //初始化船的控制监听
+        // this._initBoatLayerListener();
         //七日登录展示
         if (GameData.playerInfo.loginTimes === 1) {
             //七日登陆
@@ -150,7 +154,7 @@ cc.Class({
 
     //自动降落船只
     _autoCreateBoat() {
-        this.scheduleOnce(this._dropBoat, 5);
+        this.scheduleOnce(this._requestDropBoat, 5);
     },
     //获取空闲船位数组
     _getEmptyParkArr() {
@@ -177,7 +181,7 @@ cc.Class({
         return this._getEmptyParkArr().length === 0 ? true : false;
     },
     //创建船只
-    _dropBoat() {
+    _requestDropBoat() {
         if (this._isParkFull()) return;
         let dropBoatLevel = this._getDropBoatLevel(GameData.playerInfo.maxOwnedBoatLevel);
 
@@ -232,5 +236,24 @@ cc.Class({
         console.log('====chance1====: ', chance1);
         dropBoatLevel = Math.floor(cc.random0To1() * 100) < chance1 ? giftBoat1 : giftBoat2;
         return dropBoatLevel;
+    },
+
+    //初始化boatLayer的操作监听
+    _initBoatLayerListener() {
+        this.boatLayer.on('touchstart', (event) => {
+            console.log('====event====: ', event);
+        });
+
+        this.boatLayer.on('touchmove', () => {
+
+        });
+
+        this.boatLayer.on('touchend', () => {
+
+        });
+
+        this.boatLayer.on('touchcancel', () => {
+
+        });
     }
 });

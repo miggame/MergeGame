@@ -53,8 +53,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 0,
-      "height": 0
+      "width": 128,
+      "height": 131
     },
     "_rotationX": 0,
     "_rotationY": 0,
@@ -407,7 +407,10 @@
     },
     "boxNode": {
       "__id__": 9
-    }
+    },
+    "_level": null,
+    "_status": null,
+    "_index": null
   },
   {
     "__type__": "cc.PrefabInfo",

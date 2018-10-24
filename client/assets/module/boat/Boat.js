@@ -21,7 +21,8 @@ cc.Class({
         },
         _level: null,
         _status: null,
-        _index: null
+        _index: null,
+        _basePos: null
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -33,6 +34,8 @@ cc.Class({
     },
     onLoad() {
         this._initMsg();
+        //开启船的操作监听
+        this._initBoatListener();
     },
 
     start() {
@@ -58,7 +61,7 @@ cc.Class({
         this.boxNode.active = false;
         this.spBoat.node.active = !this.boxNode.active;
         this._showLevel();
-        //根据status判断船是运动还是静止
+        //TODO 根据status判断船是运动还是静止 
 
     },
     _showLevel() {
@@ -69,5 +72,27 @@ cc.Class({
     _openBox() {
         if (this.spBoat.node.active) return;
         this._showBoat();
+    },
+
+    //开启船的操作监听
+    _initBoatListener() {
+        cc.log('1');
+        this.node.on('touchstart', (event) => {
+            console.log('====event====: ', event);
+            this._basePos = this.node.position;
+        });
+
+        this.node.on('touchmove', (event) => {
+            this.node.x += event.getDelta().x;
+            this.node.y += event.getDelta().y;
+        });
+
+        this.node.on('touchend', () => {
+
+        });
+
+        this.node.on('touchcancel', () => {
+
+        });
     }
 });
