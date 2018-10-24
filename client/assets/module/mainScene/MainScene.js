@@ -74,10 +74,10 @@ cc.Class({
         this._parkHeight = this.basePark.height * 1.4;
         this.basePark.active = false;
         this.parkLayer.removeAllChildren();
+        this.boatLayer.destroyAllChildren();
         this._initPark(GameData.playerInfo.parkArr);
 
         //倒计时落船
-        this.boatLayer.destroyAllChildren();
         this._autoCreateBoat();
         //七日登录展示
         if (GameData.playerInfo.loginTimes === 1) {
@@ -112,6 +112,8 @@ cc.Class({
             this.parkLayer.addChild(parkPreNode);
             parkPreNode.position = parkPosArr[i];
             parkPreNode.getComponent('Park').initView(data[i]);
+            //初始化船只
+            this._initBoat(data[i].level, parkPosArr[i], data[i].status, data[i].index);
         }
     },
     //获取停船位坐标
@@ -135,9 +137,19 @@ cc.Class({
         }
         return posArr;
     },
+    //初始化船
+    _initBoat(level, pos, status, index) {
+        //判断船位上船只状态
+        if (status === -1) return;
+
+        let boatPreNode = cc.instantiate(this.boatPre);
+        this.boatLayer.addChild(boatPreNode);
+        boatPreNode.position = pos;
+        boatPreNode.getComponent('Boat').initView(level, status, index, false);
+    },
+
     //自动降落船只
     _autoCreateBoat() {
-        cc.log('1');
         this.scheduleOnce(this._dropBoat, 5);
     },
     //获取空闲船位数组

@@ -19,6 +19,9 @@ cc.Class({
             default: null,
             type: cc.Node
         },
+        _level: null,
+        _status: null,
+        _index: null
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -37,9 +40,12 @@ cc.Class({
     },
 
     // update (dt) {},
-    initView(level) {
+    initView(level, status, index, flag = true) {
+        this._status = status;
         this._level = level;
-        this._showBox();
+        this._index = index;
+
+        flag === true ? this._showBox() : this._showBoat();
     },
 
     _showBox() {
@@ -48,9 +54,12 @@ cc.Class({
         this.scheduleOnce(this._openBox, 3);
     },
     _showBoat() {
+        console.log('====1====: ');
         this.boxNode.active = false;
         this.spBoat.node.active = !this.boxNode.active;
         this._showLevel();
+        //根据status判断船是运动还是静止
+
     },
     _showLevel() {
         this.lblBoatLevel.node.active = this.spBoat.node.active;

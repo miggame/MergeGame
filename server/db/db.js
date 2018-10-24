@@ -267,8 +267,6 @@ module.exports = {
                 }
                 return;
             }
-            console.log('====docs.gold====: ', typeof docs.gold);
-            console.log('====gold====: ', typeof gold);
             docs.gold += gold;
             docs.medal += medal;
             User.updateOne(condition, docs, (err, raw) => {
@@ -301,7 +299,7 @@ module.exports = {
             }
             let parkArr = docs.parkArr;
             parkArr[index].status = parseInt(status);
-            parkArr[index].level = level;
+            parkArr[index].level = parseInt(level);
             User.updateOne(condition, {
                 parkArr: parkArr
             }, (err, raw) => {
