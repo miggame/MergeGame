@@ -88,6 +88,49 @@ function getWay(index) {
     return way;
 }
 
+//获取空闲船位数组
+function getEmptyParkArr(parkArr) {
+    let emptyParkArr = [];
+
+    let len = parkArr.length;
+    for (let i = 0; i < len; ++i) {
+        if (parkArr[i].status === 0) emptyParkArr.push(parkArr[i]);
+    }
+    return emptyParkArr;
+}
+
+//获取空闲船位索引数组
+function getEmptyParkIndexArr(parkArr) {
+    let emptyParkIndexArr = [];
+
+    let len = parkArr.length;
+    for (let i = 0; i < len; ++i) {
+        if (parkArr[i].status === 0) emptyParkIndexArr.push(parkArr[i].index);
+    }
+    return emptyParkIndexArr;
+}
+
+//判定是否有空船位
+function isParkFull(parkArr) {
+    return getEmptyParkArr(parkArr).length === 0 ? true : false;
+}
+
+//获取掉落船只的级别
+function getDropBoatLevel(maxOwnedBoatLevel) {
+    let dropBoatLevel = 0;
+    if (maxOwnedBoatLevel === 0) {
+        dropBoatLevel = 1;
+        return dropBoatLevel;
+    }
+    let boatData = gameData.data.boatShop;
+    let giftBoat1 = boatData[maxOwnedBoatLevel].giftBoat1;
+    let giftBoat2 = boatData[maxOwnedBoatLevel].giftBoat2;
+    let chance1 = boatData[maxOwnedBoatLevel].chance1;
+    // let chance2 = boatData[maxOwnedBoatLevel].chance2;
+    dropBoatLevel = Math.floor(cc.random0To1() * 100) < chance1 ? giftBoat1 : giftBoat2;
+    return dropBoatLevel;
+}
+
 module.exports = {
     init(config) { //初始化数据库
         let host = config.host;
@@ -312,6 +355,50 @@ module.exports = {
                     cb(parkArr);
                 }
             });
+        });
+    },
+
+    dropBoat(userId, cb) { //请求掉落船只
+        let condition = {
+            userId: userId
+        };
+        User.findOne(condition, (err, docs) => {
+            let parkArr = docs.parkArr;
+            if (isParkFull(parkArr)) {
+                if (cb) {
+                    cb(null);
+                }
+                return;
+            }
+            //获取掉落等级
+            let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
+            //获取空闲船位索引数组
+            let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
+            let len = emptyParkIndexArr.length;
+            let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
+            let status = 1;
+            parkArr[randIndex].status = parseInt(status);
+            parkArr[randIndex].level = dropBoatLevel;
+
+            User.updateOne(condition, {
+                parkArr: parkArr
+            }, (err, raw) => {
+                if (err) {
+                    console.error('err: ', err);
+                    //TODO 
+                    return;
+                }
+                if (cb) {
+                    let data = {
+                        index: randIndex,
+                        level: dropBoatLevel,
+                        status: status
+                    };
+                    cb(data);
+                    return;
+                }
+            });
+
         });
     }
 }

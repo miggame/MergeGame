@@ -90,4 +90,19 @@ MergeGame服务端接口
     }
 
 
+6.请求掉出
+>接口：requestDropBoat
+
+>参数：{userId:'111'}
+
+>返回：errcode:0成功
+
+    {
+        msgId:5001,
+        errcode:0,
+        errmsg:'ok'
+        data:
+    }
+
+
 

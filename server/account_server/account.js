@@ -118,6 +118,29 @@ app.get('/updateParkStatus', (req, res) => {
     });
 });
 
+//请求掉落船只
+app.get('/requestDropBoat', (req, res) => {
+    let reqData = req.query;
+    let userId = reqData.userId;
+    db.dropBoat(userId, (data) => {
+        let ret = {
+            msgId: 5001,
+            errcode: 0,
+            errmsg: 'ok',
+            data: data
+        }
+        if (data === null) {
+            ret = {
+                msgId: 5001,
+                errcode: 0,
+                errmsg: 'ok',
+                data: null
+            };
+        }
+        send(res, ret);
+    });
+});
+
 module.exports = {
     start(config) { //config对应account的配置
         app.listen(config.port);

@@ -19,6 +19,10 @@ window.GameMsgHttp = {
         UpdateParkStatus: {
             id: 4001,
             msg: 'updateParkStatus'
+        },
+        RequestDropBoat: {
+            id: 5001,
+            msg: 'requestDropBoat'
         }
 
     },

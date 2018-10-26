@@ -2,7 +2,7 @@ let Observer = require('Observer');
 let UIMgr = require('UIMgr');
 let NetHttpMgr = require('NetHttpMgr');
 let GameData = require('GameData');
-
+let DialogMgr = require('DialogMgr')
 cc.Class({
     extends: Observer,
 
@@ -58,7 +58,8 @@ cc.Class({
     _getMsgList() {
         return [
             GameMsgHttp.Msg.SevenDay.msg,
-            GameMsgHttp.Msg.UpdateParkStatus.msg
+            GameMsgHttp.Msg.UpdateParkStatus.msg,
+            GameMsgHttp.Msg.RequestDropBoat.msg
         ];
     },
     _onMsg(msg, data) {
@@ -66,6 +67,17 @@ cc.Class({
             console.log('====data====: ', data);
             GameData.playerInfo.parkArr = data;
             this._autoCreateBoat();
+        } else if (msg === GameMsgHttp.Msg.RequestDropBoat.msg) {
+            if (data === null) {
+                DialogMgr.showTipsWithOkBtn(
+                    'the parks is full!',
+                    null,
+                    null,
+                    null
+                );
+                return;
+            }
+            this._createDropBoat(data);
         }
     },
     onLoad() {
@@ -91,7 +103,6 @@ cc.Class({
             });
             return;
         }
-
     },
 
     start() {
@@ -180,29 +191,27 @@ cc.Class({
     _isParkFull() {
         return this._getEmptyParkArr().length === 0 ? true : false;
     },
-    //创建船只
+    //请求创建船只
     _requestDropBoat() {
-        if (this._isParkFull()) return;
-        let dropBoatLevel = this._getDropBoatLevel(GameData.playerInfo.maxOwnedBoatLevel);
-
-        let emptyParkIndexArr = this._getEmptyParkIndexArr();
-        let len = emptyParkIndexArr.length;
-        let randIndex = emptyParkIndexArr[(Math.floor(cc.random0To1() * len))];
-        let pos = this._getParkPos(randIndex);
+        let sendData = {
+            userId: GameData.playerInfo.userId
+        };
+        NetHttpMgr.quest(GameMsgHttp.Msg.RequestDropBoat, sendData);
+    },
+    //创建掉落船只
+    _createDropBoat(data) {
+        let pos = this._getParkPos(data.index);
         let boatPreNode = cc.instantiate(this.boatPre);
         this.boatLayer.addChild(boatPreNode);
-        boatPreNode.getComponent('Boat').initView(dropBoatLevel);
+        boatPreNode.getComponent('Boat').initView(data.level);
         boatPreNode.x = pos.x;
         boatPreNode.y = cc.view.getVisibleSize().height;
         let moveAct = cc.moveTo(0.5, pos).easing(cc.easeInOut(3.0));
-        let statusData = {
-            index: randIndex,
-            status: 1,
-            level: dropBoatLevel
-        };
-        let cbAct = cc.callFunc(this._updateParkStatus, this, statusData);
-        boatPreNode.runAction(cc.sequence(moveAct, cbAct));
+        let delayAct = cc.delayTime(5);
+        let callBackAct = cc.callFunc(this._requestDropBoat, this);
+        boatPreNode.runAction(cc.sequence(moveAct, delayAct, callBackAct));
     },
+
     //获取具体索引的船位坐标
     _getParkPos(index) {
         let parkPosArr = this._getParkPosArr(GameData.playerInfo.parkArr);
