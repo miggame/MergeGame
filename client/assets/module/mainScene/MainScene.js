@@ -69,17 +69,22 @@ cc.Class({
             this._autoCreateBoat();
         } else if (msg === GameMsgHttp.Msg.RequestDropBoat.msg) {
             if (data === null) {
-                DialogMgr.showTipsWithOkBtn(
-                    'the parks is full!',
-                    null,
-                    null,
-                    null
-                );
+                // DialogMgr.showTipsWithOkBtn(
+                //     'the parks is full!',
+                //     null,
+                //     null,
+                //     null
+                // );
                 return;
             }
             this._createDropBoat(data);
         }
     },
+
+    _onError(msg, code, data) {
+
+    },
+
     onLoad() {
         this._initMsg();
         //初始化停船位

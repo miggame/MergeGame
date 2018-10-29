@@ -14,7 +14,6 @@ module.exports = {
         return jsonData;
     },
     data: null,
-
     initGameData() {
         this.data = JSON.parse(this.readJsonFile());
     },

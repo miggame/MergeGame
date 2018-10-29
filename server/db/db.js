@@ -26,7 +26,9 @@ let userSchema = new Schema({
     sumDay: Number,
     gameData: Map,
     parkArr: Array,
-    way: Number
+    way: Number,
+    normalDrop: Number,
+    rewardDrop: Number
 });
 
 // let sevenDaySchema = new Schema({
@@ -129,6 +131,15 @@ function getDropBoatLevel(maxOwnedBoatLevel) {
     // let chance2 = boatData[maxOwnedBoatLevel].chance2;
     dropBoatLevel = Math.floor(cc.random0To1() * 100) < chance1 ? giftBoat1 : giftBoat2;
     return dropBoatLevel;
+}
+
+//普通掉落记数
+function recordNormalDrop() {
+
+}
+//奖励掉落记数
+function recordRewardDrop() {
+
 }
 
 module.exports = {
@@ -236,7 +247,9 @@ module.exports = {
                     sumDay: 1,
                     gameData: gameData.data,
                     parkArr: getPark(1),
-                    way: getWay(1)
+                    way: getWay(1),
+                    normalDrop: 0,
+                    rewardDrop: 0
                 };
                 console.log('====data====: ', data);
                 User.create(data, (err, docs) => {
@@ -368,6 +381,7 @@ module.exports = {
                 if (cb) {
                     cb(null);
                 }
+                recordNormalDrop(); //普通掉落记数+1
                 return;
             }
             //获取掉落等级
@@ -383,17 +397,17 @@ module.exports = {
             User.updateOne(condition, {
                 parkArr: parkArr
             }, (err, raw) => {
+                let data = {
+                    index: randIndex,
+                    level: dropBoatLevel,
+                    status: status
+                };
                 if (err) {
                     console.error('err: ', err);
                     //TODO 
                     return;
                 }
                 if (cb) {
-                    let data = {
-                        index: randIndex,
-                        level: dropBoatLevel,
-                        status: status
-                    };
                     cb(data);
                     return;
                 }

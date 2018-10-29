@@ -17,7 +17,9 @@ module.exports = {
         sumDay: 1,
         gameData: null,
         parkArr: [],
-        way: 0
+        way: 0,
+        normalDrop: 0,
+        rewardDrop: 0
     },
 
     initPlayerInfo(data) {
@@ -46,6 +48,8 @@ module.exports = {
             this.playerInfo.gameData = data.gameData;
             this.playerInfo.parkArr = data.parkArr;
             this.playerInfo.way = data.way;
+            this.playerInfo.normalDrop = data.normalDrop;
+            this.playerInfo.rewardDrop = data.rewardDrop;
         }
     },
 
@@ -62,6 +66,8 @@ module.exports = {
         this.playerInfo.gameData = null;
         this.playerInfo.parkArr = [];
         this.playerInfo.way = 0;
+        this.playerInfo.normalDrop = 0;
+        this.playerInfo.rewardDrop = 0;
     },
 
     resetGameData() {
