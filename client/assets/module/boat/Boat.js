@@ -57,7 +57,6 @@ cc.Class({
         this.scheduleOnce(this._openBox, 3);
     },
     _showBoat() {
-        console.log('====1====: ');
         this.boxNode.active = false;
         this.spBoat.node.active = !this.boxNode.active;
         this._showLevel();
@@ -76,7 +75,6 @@ cc.Class({
 
     //开启船的操作监听
     _initBoatListener() {
-        cc.log('1');
         this.node.on('touchstart', (event) => {
             console.log('====event====: ', event);
             this._basePos = this.node.position;

@@ -23,6 +23,10 @@ window.GameMsgHttp = {
         RequestDropBoat: {
             id: 5001,
             msg: 'requestDropBoat'
+        },
+        RequestDropBoatInRecord: {
+            id: 6001,
+            msg: 'RequestDropBoatInRecord'
         }
 
     },

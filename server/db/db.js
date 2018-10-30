@@ -141,6 +141,62 @@ function recordNormalDrop() {
 function recordRewardDrop() {
 
 }
+//根据conditoin获取用户基础信息
+function findUserInfo(condition, cb) {
+    User.findOne(condition, (err, docs) => {
+        if (err) {
+            console.error('err: ', err);
+            return;
+        }
+        if (cb) {
+            cb(docs);
+        }
+    });
+}
+
+function dropBoatArrInRecord(condition, count, docs, cb) {
+    let parkArr = docs.parkArr;
+    let data = [];
+    for (let i = 0; i < count; ++i) {
+        let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
+        //获取空闲船位索引数组
+        let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
+        let len = emptyParkIndexArr.length;
+        let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
+        let status = 1;
+        parkArr[randIndex].status = parseInt(status);
+        parkArr[randIndex].level = dropBoatLevel;
+        let dataItem = {
+            index: randIndex,
+            level: dropBoatLevel,
+            status: status
+        };
+        data.push(dataItem);
+    }
+    console.log('====data====: ', data);
+    User.updateOne(condition, {
+        parkArr: parkArr
+    }, (err, raw) => {
+        if (err) {
+            console.error('err: ', err);
+            //TODO 
+            return;
+        }
+        if (cb) {
+            cb(data);
+            return;
+        }
+    });
+}
+
+//获取rewardDrop剩余数量
+function getRewardDropNum(docs) {
+    return docs.rewardDrop;
+}
+//获取normalDrop剩余数量
+function getNormalDropNum(docs) {
+    return docs.normalDrop;
+}
 
 module.exports = {
     init(config) { //初始化数据库
@@ -412,7 +468,31 @@ module.exports = {
                     return;
                 }
             });
-
+        });
+    },
+    //调落记录中的箱子
+    dropBoatInRecord(userId, cb) {
+        let condition = {
+            userId: userId
+        };
+        findUserInfo(condition, (docs) => {
+            let parkArr = docs.parkArr;
+            if (isParkFull(parkArr)) {
+                if (cb) {
+                    cb(null);
+                }
+                return;
+            }
+            let rewardDropNum = getRewardDropNum(docs);
+            let normalDropNum = getNormalDropNum(docs);
+            let emptyParkArr = getEmptyParkArr(parkArr);
+            let emptyParkLen = emptyParkArr.length;
+            if (rewardDropNum > 0) {
+                let len = 0;
+                let diff = rewardDropNum - emptyParkLen;
+                len = diff >= 0 ? emptyParkLen : rewardDropNum;
+                dropBoatArrInRecord(condition, len, docs, cb);
+            }
         });
     }
 }

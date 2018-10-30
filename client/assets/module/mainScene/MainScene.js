@@ -59,7 +59,8 @@ cc.Class({
         return [
             GameMsgHttp.Msg.SevenDay.msg,
             GameMsgHttp.Msg.UpdateParkStatus.msg,
-            GameMsgHttp.Msg.RequestDropBoat.msg
+            GameMsgHttp.Msg.RequestDropBoat.msg,
+            GameMsgHttp.Msg.RequestDropBoatInRecord.msg
         ];
     },
     _onMsg(msg, data) {
@@ -78,6 +79,11 @@ cc.Class({
                 return;
             }
             this._createDropBoat(data);
+        } else if (msg === GameMsgHttp.Msg.RequestDropBoatInRecord) {
+            if (data === null) {
+                return;
+            }
+            console.log('====data====: ', data);
         }
     },
 
@@ -95,8 +101,16 @@ cc.Class({
         this.boatLayer.destroyAllChildren();
         this._initPark(GameData.playerInfo.parkArr);
 
-        //倒计时落船
-        this._autoCreateBoat();
+        //判定是否有空船位
+        if (!this._isParkFull()) { //有空船位时
+            //判定是否有掉落记录
+            if (this._checkDropRecord()) { //有掉落记录时
+                this._requestDropBoatInRecord()
+            } else { //无掉落记录时
+                //倒计时落船
+                this._autoCreateBoat();
+            }
+        }
 
         //初始化船的控制监听
         // this._initBoatLayerListener();
@@ -245,9 +259,8 @@ cc.Class({
         let giftBoat1 = boatData[maxOwnedBoatLevel].giftBoat1;
         let giftBoat2 = boatData[maxOwnedBoatLevel].giftBoat2;
         let chance1 = boatData[maxOwnedBoatLevel].chance1;
-        let chance2 = boatData[maxOwnedBoatLevel].chance2;
-        console.log('====giftBoat1====: ', giftBoat1);
-        console.log('====chance1====: ', chance1);
+        // let chance2 = boatData[maxOwnedBoatLevel].chance2;
+
         dropBoatLevel = Math.floor(cc.random0To1() * 100) < chance1 ? giftBoat1 : giftBoat2;
         return dropBoatLevel;
     },
@@ -269,5 +282,29 @@ cc.Class({
         this.boatLayer.on('touchcancel', () => {
 
         });
-    }
+    },
+
+    //判定是否有掉落记录
+    _checkDropRecord() {
+        let rewardDropNum = this._getRewardDropNum();
+        let normalDropNum = this._getNormalDropNum();
+        return rewardDropNum > 0 || normalDropNum > 0;
+    },
+
+    //请求掉落在记录中的船只
+    _requestDropBoatInRecord() {
+        let sendData = {
+            userId: GameData.playerInfo.userId
+        };
+        NetHttpMgr.quest(GameMsgHttp.Msg.RequestDropBoatInRecord, sendData);
+    },
+    //获取rewardDrop剩余数量
+    _getRewardDropNum() {
+        return GameData.playerInfo.rewardDrop;
+    },
+    //获取normalDrop剩余数量
+    _getNormalDropNum() {
+        return GameData.playerInfo.normalDrop;
+    },
+
 });

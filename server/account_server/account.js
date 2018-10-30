@@ -141,6 +141,21 @@ app.get('/requestDropBoat', (req, res) => {
     });
 });
 
+//请求掉落记录中的船只
+app.get('/requestDropBoatInRecord', (req, res) => {
+    let reqData = req.query;
+    let userId = reqData.userId;
+    db.dropBoatInRecord(userId, (data) => {
+        let ret = {
+            msgId: 6001,
+            errcode: 0,
+            errmsg: 'ok',
+            data: data
+        }
+        send(res, ret);
+    });
+})
+
 module.exports = {
     start(config) { //config对应account的配置
         app.listen(config.port);
