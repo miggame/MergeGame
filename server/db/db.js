@@ -134,8 +134,13 @@ function getDropBoatLevel(maxOwnedBoatLevel) {
 }
 
 //普通掉落记数
-function recordNormalDrop() {
-
+function recordNormalDrop(condition, docs) {
+    let normalDrop = docs.normalDrop;
+    normalDrop++;
+    console.log('====normalDrop====: ', normalDrop);
+    User.findOneAndUpdate(condition, {
+        normalDrop: normalDrop
+    });
 }
 //奖励掉落记数
 function recordRewardDrop() {
@@ -437,7 +442,7 @@ module.exports = {
                 if (cb) {
                     cb(null);
                 }
-                recordNormalDrop(); //普通掉落记数+1
+                recordNormalDrop(condition, docs); //普通掉落记数+1
                 return;
             }
             //获取掉落等级
