@@ -2,7 +2,7 @@ const DB_HOST = '127.0.0.1';
 const DB_PORT = 27017;
 const DB_NAME = 'mergeGame';
 
-const ACCOUNT_HOST = '192.168.1.119';
+const ACCOUNT_HOST = '192.168.1.113';
 const ACCOUNT_PORT = 9001;
 
 

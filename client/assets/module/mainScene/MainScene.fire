@@ -2647,6 +2647,7 @@
     },
     "boatPre": {
       "__uuid__": "143015fb-3a57-433f-baba-f14d63055e3d"
-    }
+    },
+    "_boatTouchFlag": false
   }
 ]

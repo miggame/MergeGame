@@ -103,12 +103,10 @@ cc.Class({
 
         //判定是否有空船位
         if (!this._isParkFull()) { //有空船位时
-            //判定是否有掉落记录
-            if (this._checkDropRecord()) { //有掉落记录时
-                this._requestDropBoatInRecord()
-            } else { //无掉落记录时
-                //倒计时落船
-                this._autoCreateBoat();
+            if (this._checkDropCache()) { //dropCache有缓存数据
+                this._requestDropBoat();
+            } else {
+                this.scheduleOnce(this._requestDropBoat, 5);
             }
         }
 
@@ -182,10 +180,6 @@ cc.Class({
         boatPreNode.getComponent('Boat').initView(level, status, index, false);
     },
 
-    //自动降落船只
-    _autoCreateBoat() {
-        this.scheduleOnce(this._requestDropBoat, 5);
-    },
     //获取空闲船位数组
     _getEmptyParkArr() {
         let emptyParkArr = [];
@@ -229,6 +223,7 @@ cc.Class({
         let delayAct = cc.delayTime(5);
         let callBackAct = cc.callFunc(this._requestDropBoat, this);
         boatPreNode.runAction(cc.sequence(moveAct, delayAct, callBackAct));
+        // boatPreNode.runAction(moveAct);
     },
 
     //获取具体索引的船位坐标
@@ -298,13 +293,16 @@ cc.Class({
         };
         NetHttpMgr.quest(GameMsgHttp.Msg.RequestDropBoatInRecord, sendData);
     },
-    //获取rewardDrop剩余数量
-    _getRewardDropNum() {
-        return GameData.playerInfo.rewardDrop;
+
+    //判定是否掉落缓存中有数据
+    _checkDropCache() {
+        var len = this._getDropCache().length; //获取掉落缓存
+        return len > 0;
     },
-    //获取normalDrop剩余数量
-    _getNormalDropNum() {
-        return GameData.playerInfo.normalDrop;
-    },
+
+    //获取掉落缓存
+    _getDropCache() {
+        return GameData.playerInfo.dropCache;
+    }
 
 });

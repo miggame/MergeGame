@@ -27,8 +27,9 @@ let userSchema = new Schema({
     gameData: Map,
     parkArr: Array,
     way: Number,
-    normalDrop: Number,
-    rewardDrop: Number
+    // normalDrop: Number,
+    // rewardDrop: Number
+    dropCache: Array //dropCache=[1,2] 1代表常规 2代表奖励
 });
 
 // let sevenDaySchema = new Schema({
@@ -133,19 +134,18 @@ function getDropBoatLevel(maxOwnedBoatLevel) {
     return dropBoatLevel;
 }
 
-//普通掉落记数
-function recordNormalDrop(condition, docs) {
-    let normalDrop = docs.normalDrop;
-    normalDrop++;
-    console.log('====normalDrop====: ', normalDrop);
-    User.findOneAndUpdate(condition, {
-        normalDrop: normalDrop
-    });
+//更新parkArr数据
+function updateParkArr(parkArr, dropBoatLevel) {
+    //获取空闲船位索引数组
+    let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
+    let len = emptyParkIndexArr.length;
+    let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
+    let status = 1;
+    parkArr[randIndex].status = parseInt(status);
+    parkArr[randIndex].level = dropBoatLevel;
+    return parkArr;
 }
-//奖励掉落记数
-function recordRewardDrop() {
 
-}
 //根据conditoin获取用户基础信息
 function findUserInfo(condition, cb) {
     User.findOne(condition, (err, docs) => {
@@ -201,6 +201,16 @@ function getRewardDropNum(docs) {
 //获取normalDrop剩余数量
 function getNormalDropNum(docs) {
     return docs.normalDrop;
+}
+
+//放进dropCache
+function pushDropCache(docs, type) {
+    let dropCache = docs.dropCache;
+    if (dropCache.length === 0) {
+        dropCache.push(type);
+    } else {
+        return;
+    }
 }
 
 module.exports = {
@@ -309,8 +319,9 @@ module.exports = {
                     gameData: gameData.data,
                     parkArr: getPark(1),
                     way: getWay(1),
-                    normalDrop: 0,
-                    rewardDrop: 0
+                    // normalDrop: 0,
+                    // rewardDrop: 0
+                    dropCache: []
                 };
                 console.log('====data====: ', data);
                 User.create(data, (err, docs) => {
@@ -438,13 +449,62 @@ module.exports = {
         };
         User.findOne(condition, (err, docs) => {
             let parkArr = docs.parkArr;
-            if (isParkFull(parkArr)) {
+            if (isParkFull(parkArr)) { //没有空闲位
                 if (cb) {
                     cb(null);
                 }
-                recordNormalDrop(condition, docs); //普通掉落记数+1
+                pushDropCache(docs);
                 return;
             }
+
+            //有空闲位置时
+            let dropCache = docs.dropCache;
+            if (dropCache.length === 0) { //下落缓存中无数据时
+                //获取掉落等级
+                let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
+                //获取空闲船位索引数组
+                let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
+                let len = emptyParkIndexArr.length;
+                let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
+                let status = 1;
+                parkArr[randIndex].status = parseInt(status);
+                parkArr[randIndex].level = dropBoatLevel;
+
+                User.updateOne(condition, {
+                    parkArr: parkArr
+                }, (err, raw) => {
+                    let data = {
+                        index: randIndex,
+                        level: dropBoatLevel,
+                        status: status
+                    };
+                    if (err) {
+                        console.error('err: ', err);
+                        //TODO 
+                        return;
+                    }
+                    if (cb) {
+                        cb(data);
+                        return;
+                    }
+                });
+            } else { //下落缓存中有数据时
+                let emptyParkArr = getEmptyParkArr(parkArr);
+                if (emptyParkArr.length >= dropCache.length) {
+                    for (let i = 0; i < dropCache.length; ++i) {
+                        //获取掉落等级
+                        let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
+                        //获取空闲船位索引数组
+                        let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
+                        let len = emptyParkIndexArr.length;
+                        let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
+                        let status = 1;
+                        parkArr[randIndex].status = parseInt(status);
+                        parkArr[randIndex].level = dropBoatLevel;
+                    }
+                }
+            }
+
             //获取掉落等级
             let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
             //获取空闲船位索引数组

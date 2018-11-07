@@ -23,6 +23,7 @@ app.get('/register', (req, res) => {
     let reqData = req.query;
     let userId = reqData.userId;
     db.createAccount(userId, (data) => {
+        console.log('====data====: ', data);
         let sendData = data;
         let ret = {
             msgId: 1001,
