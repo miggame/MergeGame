@@ -51,7 +51,23 @@ cc.Class({
             default: null,
             type: cc.Prefab
         },
-        _boatTouchFlag: false
+        _boatTouchFlag: false,
+        //停船位层
+        wayLayout: {
+            displayName: 'wayLayout',
+            default: null,
+            type: cc.Node
+        },
+        wayPre: {
+            displayName: 'wayPre',
+            default: null,
+            type: cc.Prefab
+        },
+        lblWay: {
+            displayName: 'lblWay',
+            default: null,
+            type: cc.Label
+        },
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -95,7 +111,6 @@ cc.Class({
         this.parkLayer.removeAllChildren();
         this.boatLayer.destroyAllChildren();
         this._initPark(GameData.playerInfo.parkArr);
-
         //判定是否有空船位
         if (!this._isParkFull()) { //有空船位时
             // if (this._checkDropCache()) { //dropCache有缓存数据
@@ -107,9 +122,9 @@ cc.Class({
             // }
             this._requestDropBoat(1, 1);
         }
+        //初始化停船航道
+        this._addWay();
 
-        //初始化船的控制监听
-        // this._initBoatLayerListener();
         //七日登录展示
         if (GameData.playerInfo.loginTimes === 1) {
             //七日登陆
@@ -297,6 +312,31 @@ cc.Class({
     //获取掉落缓存
     _getDropCache() {
         return GameData.playerInfo.dropCache;
-    }
+    },
+    //初始化航道
+    _addWay() {
+        let totalWay = GameData.playerInfo.way;
+        let numInWay = this._getBoatNumInWay();
+        let preWayCount = this.wayLayout.childrenCount;
+        for (let i = 0; i < totalWay; ++i) {
+            let wayPreNode = cc.instantiate(this.wayPre);
+            let index = ++preWayCount;
+            this.wayLayout.addChild(wayPreNode, index);
+            wayPreNode.getComponent('Way').initView(index, numInWay);
+        }
+        this.lblWay.node.x = this.wayLayout.x;
+        this.lblWay.node.y = this.wayLayout.y + this.wayLayout.height / 2 + this.lblWay.node.height;
+        this.lblWay.string = numInWay + '/' + totalWay;
+    },
 
+    //获取在航道上的船只数量
+    _getBoatNumInWay() {
+        let num = 0;
+        for (const iter of GameData.playerInfo.parkArr) {
+            if (iter.status === 2) {
+                num++;
+            }
+        }
+        return num;
+    }
 });

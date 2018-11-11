@@ -59,6 +59,7 @@ cc.Class({
     _showBoat() {
         this.boxNode.active = false;
         this.spBoat.node.active = !this.boxNode.active;
+        // this.spBoat.node.y = this.spBoat.node.y + this.spBoat.node.height / 2;
         this._showLevel();
         //TODO 根据status判断船是运动还是静止 
 
