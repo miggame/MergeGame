@@ -1,4 +1,5 @@
 let Observer = require('Observer');
+let ObserverMgr = require('ObserverMgr');
 cc.Class({
     extends: Observer,
 
@@ -14,6 +15,11 @@ cc.Class({
             default: null,
             type: cc.Label
         },
+        boatShadow: {
+            displayName: 'boatShadow',
+            default: null,
+            type: cc.Node
+        },
         boxNode: {
             displayName: 'boxNode',
             default: null,
@@ -27,10 +33,23 @@ cc.Class({
 
     // LIFE-CYCLE CALLBACKS:
     _getMsgList() {
-        return [];
+        return [
+            GameLocalMsg.Msg.BoatGoBack,
+            GameLocalMsg.Msg.PushBoatInWay
+        ];
     },
     _onMsg(msg, data) {
-
+        if (msg === GameLocalMsg.Msg.BoatGoBack) {
+            let index = data.index;
+            if (this._index === index) {
+                this.node.position = this._basePos;
+            }
+        } else if (msg === GameLocalMsg.Msg.PushBoatInWay) {
+            let index = data.index;
+            if (this._index === index) {
+                this._playBoatMove();
+            }
+        }
     },
     onLoad() {
         this._initMsg();
@@ -47,8 +66,11 @@ cc.Class({
         this._status = status;
         this._level = level;
         this._index = index;
-
         flag === true ? this._showBox() : this._showBoat();
+
+        if (this._status === 2) {
+            this._playBoatMove();
+        }
     },
 
     _showBox() {
@@ -77,8 +99,10 @@ cc.Class({
     //开启船的操作监听
     _initBoatListener() {
         this.node.on('touchstart', (event) => {
-            console.log('====event====: ', event);
             this._basePos = this.node.position;
+            ObserverMgr.dispatchMsg(GameLocalMsg.Msg.ParkShowBoatShadow, {
+                index: this._index
+            });
         });
 
         this.node.on('touchmove', (event) => {
@@ -87,11 +111,20 @@ cc.Class({
         });
 
         this.node.on('touchend', () => {
-
+            let boatBoundingBox = this.node.getBoundingBox();
+            let sendData = {
+                boatBoundingBox: boatBoundingBox,
+                index: this._index
+            }
+            ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatIsInWay, sendData);
         });
 
         this.node.on('touchcancel', () => {
 
         });
+    },
+
+    _playBoatMove() {
+        this.node.getComponent(cc.Animation).play('BoatMove');
     }
 });

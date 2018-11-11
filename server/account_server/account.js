@@ -92,33 +92,6 @@ app.get('/exchangeMedal', (req, res) => {
     });
 });
 
-//船位状态更新（status:0空闲，1占有，2在跑道，3船位增加按钮
-app.get('/updateParkStatus', (req, res) => {
-    let reqData = req.query;
-    let userId = reqData.userId;
-    let index = reqData.index;
-    let status = reqData.status;
-    let level = reqData.level;
-    db.updateParkStatus(userId, index, status, level, (data) => {
-        console.log('====data====: ', data);
-        let ret = {
-            msgId: 4001,
-            errcode: 0,
-            errmsg: 'ok',
-            data: data
-        };
-        if (data === null) {
-            ret = {
-                msgId: 4001,
-                errcode: 9005,
-                errmsg: 'interval error',
-                data: null
-            };
-        }
-        send(res, ret);
-    });
-});
-
 //请求掉落船只
 app.get('/requestDropBoat', (req, res) => {
     let reqData = req.query;
@@ -144,11 +117,12 @@ app.get('/requestDropBoat', (req, res) => {
     });
 });
 
-//请求掉落记录中的船只
-app.get('/requestDropBoatInRecord', (req, res) => {
+//把船推到航道上
+app.get('/pushBoatInWay', (req, res) => {
     let reqData = req.query;
     let userId = reqData.userId;
-    db.dropBoatInRecord(userId, (data) => {
+    let index = parseInt(reqData.index);
+    db.pushBoatInWay(userId, index, (data) => {
         let ret = {
             msgId: 6001,
             errcode: 0,

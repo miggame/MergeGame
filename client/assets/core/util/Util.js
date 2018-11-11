@@ -19,5 +19,15 @@ module.exports = {
     //格式化数字
     numberFormat(number) {
         return numeral(number).format('0a').toUpperCase();
+    },
+
+    //替换精灵图片
+    setSpriteFrame(path, sprite, cb) {
+        cc.loader.loadRes(path, cc.SpriteFrame, (err, spriteFrame) => {
+            sprite.spriteFrame = spriteFrame;
+            if (cb) {
+                cb();
+            }
+        });
     }
 };

@@ -95,6 +95,14 @@ module.exports = {
                 this.playerInfo.diamond = data.diamond;
                 ObserverMgr.dispatchMsg(GameLocalMsg.Msg.UpdateUserinfo, this.playerInfo);
             }
-        }, this)
+        }, this);
+
+        //推送船只到航道上
+        ObserverMgr.addEventListener(GameMsgHttp.Msg.PushBoatInWay.msg, (msg, data) => {
+            if (data !== null) {
+                this.playerInfo.parkArr = data.parkArr;
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.PushBoatInWay, data);
+            }
+        }, this);
     }
 };

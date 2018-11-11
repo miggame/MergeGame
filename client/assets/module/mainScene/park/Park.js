@@ -1,15 +1,7 @@
-// Learn cc.Class:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/class.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/class.html
-// Learn Attribute:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] http://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/en/scripting/life-cycle-callbacks.html
-
+let Observer = require('Observer');
+let Util = require('Util');
 cc.Class({
-    extends: cc.Component,
+    extends: Observer,
 
     properties: {
         _data: null,
@@ -18,11 +10,25 @@ cc.Class({
             default: null,
             type: cc.Button
         },
+        spBoatShadow: {
+            displayName: 'spBoatShadow',
+            default: null,
+            type: cc.Sprite
+        },
+
     },
 
     // LIFE-CYCLE CALLBACKS:
+    _getMsgList() {
+        return [];
+    },
 
-    // onLoad () {},
+    _onMsg(msg, data) {
+
+    },
+    onLoad() {
+        this._initMsg();
+    },
 
     start() {
 
@@ -33,6 +39,12 @@ cc.Class({
         this._data = data;
         this.node.setLocalZOrder(data.index);
         this.btnParkPlus.node.active = data.status === -1;
+        this.spBoatShadow.node.active = data.status === 2;
+        if (this.spBoatShadow.node.active) {
+            let level = data.level;
+            let path = 'boat/boat_' + level;
+            Util.setSpriteFrame(path, this.spBoatShadow);
+        }
     },
 
     onBtnClickToPlusPark() {

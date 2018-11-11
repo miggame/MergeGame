@@ -1,4 +1,5 @@
 let Observer = require('Observer');
+let ObserverMgr = require('ObserverMgr');
 let UIMgr = require('UIMgr');
 let NetHttpMgr = require('NetHttpMgr');
 let GameData = require('GameData');
@@ -74,27 +75,34 @@ cc.Class({
     _getMsgList() {
         return [
             GameMsgHttp.Msg.SevenDay.msg,
-            GameMsgHttp.Msg.UpdateParkStatus.msg,
             GameMsgHttp.Msg.RequestDropBoat.msg,
-            GameMsgHttp.Msg.RequestDropBoatInRecord.msg
+            GameLocalMsg.Msg.PushBoatInWay,
+            GameLocalMsg.Msg.BoatIsInWay,
         ];
     },
     _onMsg(msg, data) {
-        if (msg === GameMsgHttp.Msg.UpdateParkStatus.msg) {
-            console.log('====data====: ', data);
-            GameData.playerInfo.parkArr = data;
-            this._autoCreateBoat();
-        } else if (msg === GameMsgHttp.Msg.RequestDropBoat.msg) {
+        if (msg === GameMsgHttp.Msg.RequestDropBoat.msg) {
             if (data === null) {
                 console.log('====没有空闲位====');
                 return;
             }
             this._createDropBoat(data);
-        } else if (msg === GameMsgHttp.Msg.RequestDropBoatInRecord) {
-            if (data === null) {
-                return;
+        } else if (msg === GameLocalMsg.Msg.BoatIsInWay) {
+            let boatBoundingBox = data.boatBoundingBox;
+            let index = data.index;
+            let inWayFlag = this._checkBoatIsInWay(boatBoundingBox);
+            let sendData = {
+                userId: GameData.playerInfo.userId,
+                index: index,
+                inWayFlag: inWayFlag
+            };
+            if (inWayFlag) {
+                NetHttpMgr.quest(GameMsgHttp.Msg.PushBoatInWay, sendData);
+            } else {
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, sendData);
             }
-            console.log('====data====: ', data);
+        } else if (msg === GameLocalMsg.Msg.PushBoatInWay) {
+            this._addWay(1);
         }
     },
 
@@ -248,17 +256,6 @@ cc.Class({
         let parkPosArr = this._getParkPosArr(GameData.playerInfo.parkArr);
         return parkPosArr[index];
     },
-    //更新已有船位状态
-    _updateParkStatus(node, statusData) {
-        console.log('====statusData====: ', statusData);
-        let sendData = {
-            userId: GameData.playerInfo.userId,
-            index: statusData.index,
-            status: statusData.status,
-            level: statusData.level
-        };
-        NetHttpMgr.quest(GameMsgHttp.Msg.UpdateParkStatus, sendData);
-    },
 
     //获取掉落船只的级别
     _getDropBoatLevel(maxOwnedBoatLevel) {
@@ -314,8 +311,8 @@ cc.Class({
         return GameData.playerInfo.dropCache;
     },
     //初始化航道
-    _addWay() {
-        let totalWay = GameData.playerInfo.way;
+    _addWay(count = GameData.playerInfo.way) {
+        let totalWay = count;
         let numInWay = this._getBoatNumInWay();
         let preWayCount = this.wayLayout.childrenCount;
         for (let i = 0; i < totalWay; ++i) {
@@ -338,5 +335,10 @@ cc.Class({
             }
         }
         return num;
+    },
+
+    _checkBoatIsInWay(boundingBox) {
+        let wayRect = this.wayLayout.getBoundingBox();
+        return cc.rectIntersectsRect(wayRect, boundingBox);
     }
 });

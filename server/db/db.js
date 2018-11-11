@@ -406,37 +406,6 @@ module.exports = {
         });
     },
 
-    updateParkStatus(userId, index, status, level, cb) { //更新船位状态
-        let condition = {
-            userId: userId
-        };
-
-        User.findOne(condition, (err, docs) => {
-            if (err) {
-                console.error('err: ', err);
-                if (cb) {
-                    cb(null)
-                };
-                return;
-            }
-            let parkArr = docs.parkArr;
-            parkArr[index].status = parseInt(status);
-            parkArr[index].level = parseInt(level);
-            User.updateOne(condition, {
-                parkArr: parkArr
-            }, (err, raw) => {
-                if (err) {
-                    console.error('err: ', err);
-                    if (cb) cb(null);
-                    return;
-                }
-                if (cb) {
-                    cb(parkArr);
-                }
-            });
-        });
-    },
-
     dropBoat(userId, type, num, cb) { //请求掉落船只
         let condition = {
             userId: userId
@@ -477,6 +446,36 @@ module.exports = {
                 if (cb) {
                     cb(data);
                     return;
+                }
+            });
+        });
+    },
+
+    pushBoatInWay(userId, index, cb) { //推送船只到航道上
+        let condition = {
+            userId: userId
+        };
+        User.findOne(condition, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                return;
+            }
+            let parkArr = docs.parkArr;
+            parkArr[index].status = 2;
+            User.updateOne(condition, {
+                parkArr: parkArr
+            }, (err, raw) => {
+                if (err) {
+                    console.error('err: ', err);
+                    return;
+                }
+                console.log('====push boat in way update successful====');
+                if (cb) {
+                    let sendData = {
+                        index: index,
+                        parkArr: parkArr
+                    }
+                    cb(sendData);
                 }
             });
         });

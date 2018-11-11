@@ -16,17 +16,13 @@ window.GameMsgHttp = {
             id: 3001,
             msg: 'exchangeMedal'
         },
-        UpdateParkStatus: {
-            id: 4001,
-            msg: 'updateParkStatus'
-        },
         RequestDropBoat: {
             id: 5001,
             msg: 'requestDropBoat'
         },
-        RequestDropBoatInRecord: {
+        PushBoatInWay: {
             id: 6001,
-            msg: 'RequestDropBoatInRecord'
+            msg: 'PushBoatInWay'
         }
 
     },
