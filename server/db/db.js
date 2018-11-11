@@ -479,5 +479,35 @@ module.exports = {
                 }
             });
         });
+    },
+
+    pullBoatBackPark(userId, index, cb) {
+        let condition = {
+            userId: userId
+        };
+        User.findOne(condition, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                return;
+            }
+            let parkArr = docs.parkArr;
+            parkArr[index].status = 1;
+            User.updateOne(condition, {
+                parkArr: parkArr
+            }, (err, raw) => {
+                if (err) {
+                    console.error('err: ', err);
+                    return;
+                }
+                console.log('====pull boat back park update successful====');
+                if (cb) {
+                    let sendData = {
+                        index: index,
+                        parkArr: parkArr
+                    }
+                    cb(sendData);
+                }
+            });
+        });
     }
 }

@@ -35,7 +35,8 @@ cc.Class({
     _getMsgList() {
         return [
             GameLocalMsg.Msg.BoatGoBack,
-            GameLocalMsg.Msg.PushBoatInWay
+            GameLocalMsg.Msg.PushBoatInWay,
+            GameLocalMsg.Msg.PullBoatBackPark
         ];
     },
     _onMsg(msg, data) {
@@ -43,11 +44,23 @@ cc.Class({
             let index = data.index;
             if (this._index === index) {
                 this.node.position = this._basePos;
+                this.node.rotation = 0;
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.ParkHideBoatShadow, {
+                    index: this._index,
+                });
             }
         } else if (msg === GameLocalMsg.Msg.PushBoatInWay) {
             let index = data.index;
             if (this._index === index) {
                 this._playBoatMove();
+            }
+        } else if (msg === GameLocalMsg.Msg.PullBoatBackPark) {
+            let index = data.index;
+            if (this._index === index) {
+                this._stopBoatMove();
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, {
+                    index: this._index
+                });
             }
         }
     },
@@ -101,7 +114,8 @@ cc.Class({
         this.node.on('touchstart', (event) => {
             this._basePos = this.node.position;
             ObserverMgr.dispatchMsg(GameLocalMsg.Msg.ParkShowBoatShadow, {
-                index: this._index
+                index: this._index,
+                level: this._level
             });
         });
 
@@ -126,5 +140,9 @@ cc.Class({
 
     _playBoatMove() {
         this.node.getComponent(cc.Animation).play('BoatMove');
+    },
+
+    _stopBoatMove() {
+        this.node.getComponent(cc.Animation).stop('BoatMove');
     }
 });

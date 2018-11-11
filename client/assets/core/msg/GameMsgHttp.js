@@ -23,6 +23,10 @@ window.GameMsgHttp = {
         PushBoatInWay: {
             id: 6001,
             msg: 'PushBoatInWay'
+        },
+        PullBoatBackPark: {
+            id: 7001,
+            msg: 'PullBoatBackPark'
         }
 
     },

@@ -14,6 +14,7 @@ cc.Class({
             default: null,
             type: cc.Sprite
         },
+        _index: null
     },
 
     // LIFE-CYCLE CALLBACKS:
@@ -35,6 +36,7 @@ cc.Class({
     initView(index, numInWay) {
         // this.spWay.node.active = flag;
         // this.spBlankWay.node.active = !this.spWay.node.active;
+        this._index = index;
         this.spWay.node.scaleX = parseInt(index) % 2 === 0 ? 1 : -1;
         this.spWay.node.active = index <= numInWay;
         this.spBlankWay.node.active = !this.spWay.node.active;

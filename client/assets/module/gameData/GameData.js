@@ -104,5 +104,13 @@ module.exports = {
                 ObserverMgr.dispatchMsg(GameLocalMsg.Msg.PushBoatInWay, data);
             }
         }, this);
+
+        //收回船到船位上
+        ObserverMgr.addEventListener(GameMsgHttp.Msg.PullBoatBackPark.msg, (msg, data) => {
+            if (data !== null) {
+                this.playerInfo.parkArr = data.parkArr;
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.PullBoatBackPark, data);
+            }
+        }, this);
     }
 };

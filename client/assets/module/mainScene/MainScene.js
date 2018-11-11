@@ -78,6 +78,7 @@ cc.Class({
             GameMsgHttp.Msg.RequestDropBoat.msg,
             GameLocalMsg.Msg.PushBoatInWay,
             GameLocalMsg.Msg.BoatIsInWay,
+            GameLocalMsg.Msg.PullBoatBackPark
         ];
     },
     _onMsg(msg, data) {
@@ -102,7 +103,9 @@ cc.Class({
                 ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, sendData);
             }
         } else if (msg === GameLocalMsg.Msg.PushBoatInWay) {
-            this._addWay(1);
+            this._updateWay();
+        } else if (msg === GameLocalMsg.Msg.PullBoatBackPark) {
+            this._updateWay();
         }
     },
 
@@ -131,7 +134,7 @@ cc.Class({
             this._requestDropBoat(1, 1);
         }
         //初始化停船航道
-        this._addWay();
+        this._initWay();
 
         //七日登录展示
         if (GameData.playerInfo.loginTimes === 1) {
@@ -310,19 +313,30 @@ cc.Class({
     _getDropCache() {
         return GameData.playerInfo.dropCache;
     },
-    //初始化航道
-    _addWay(count = GameData.playerInfo.way) {
-        let totalWay = count;
+
+    //初始化航道上的船只
+    _initWay() {
+        let totalWay = GameData.playerInfo.way;
         let numInWay = this._getBoatNumInWay();
-        let preWayCount = this.wayLayout.childrenCount;
+        this.wayLayout.destroyAllChildren();
         for (let i = 0; i < totalWay; ++i) {
             let wayPreNode = cc.instantiate(this.wayPre);
-            let index = ++preWayCount;
-            this.wayLayout.addChild(wayPreNode, index);
-            wayPreNode.getComponent('Way').initView(index, numInWay);
+            this.wayLayout.addChild(wayPreNode, i + 1);
+            wayPreNode.getComponent('Way').initView(i + 1, numInWay);
         }
         this.lblWay.node.x = this.wayLayout.x;
         this.lblWay.node.y = this.wayLayout.y + this.wayLayout.height / 2 + this.lblWay.node.height;
+        this.lblWay.string = numInWay + '/' + totalWay;
+    },
+    //增加航道上的船只
+    _updateWay() {
+        let totalWay = GameData.playerInfo.way;
+        let numInWay = this._getBoatNumInWay();
+        let wayNodeArr = this.wayLayout.children;
+        let len = wayNodeArr.length;
+        for (let i = 0; i < len; ++i) {
+            wayNodeArr[i].getComponent('Way').initView(i + 1, numInWay);
+        }
         this.lblWay.string = numInWay + '/' + totalWay;
     },
 
@@ -340,5 +354,7 @@ cc.Class({
     _checkBoatIsInWay(boundingBox) {
         let wayRect = this.wayLayout.getBoundingBox();
         return cc.rectIntersectsRect(wayRect, boundingBox);
-    }
+    },
+
+
 });

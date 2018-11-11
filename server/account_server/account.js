@@ -131,7 +131,23 @@ app.get('/pushBoatInWay', (req, res) => {
         }
         send(res, ret);
     });
-})
+});
+
+//收回船到船位上
+app.get('/pullBoatBackPark', (req, res) => {
+    let reqData = req.query;
+    let userId = reqData.userId;
+    let index = parseInt(reqData.index);
+    db.pullBoatBackPark(userId, index, (data) => {
+        let ret = {
+            msgId: 7001,
+            errcode: 0,
+            errmsg: 'ok',
+            data: data
+        }
+        send(res, ret);
+    });
+});
 
 module.exports = {
     start(config) { //config对应account的配置
