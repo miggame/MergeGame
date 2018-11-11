@@ -1,7 +1,7 @@
 let express = require('express');
 let app = express();
 let db = require('../db/db');
-let gameData = require('../gameData/gameData');
+// let gameData = require('../gameData/gameData');
 
 
 function send(res, ret) {
@@ -123,7 +123,9 @@ app.get('/updateParkStatus', (req, res) => {
 app.get('/requestDropBoat', (req, res) => {
     let reqData = req.query;
     let userId = reqData.userId;
-    db.dropBoat(userId, (data) => {
+    let type = parseInt(reqData.type);
+    let num = parseInt(reqData.num);
+    db.dropBoat(userId, type, num, (data) => {
         let ret = {
             msgId: 5001,
             errcode: 0,

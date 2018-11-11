@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 // const dayjs = require('../node_modules/dayjs');
 const moment = require('../node_modules/moment');
 const gameData = require('../gameData/gameData');
+const _ = require('../node_modules/lodash');
 
 
 let Schema = mongoose.Schema;
@@ -134,16 +135,27 @@ function getDropBoatLevel(maxOwnedBoatLevel) {
     return dropBoatLevel;
 }
 
-//更新parkArr数据
-function updateParkArr(parkArr, dropBoatLevel) {
+//根据下落数量更新空闲船位数组
+function getRandIndexArr(count, parkArr) { //count:为长度
     //获取空闲船位索引数组
     let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
-    let len = emptyParkIndexArr.length;
-    let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
-    let status = 1;
-    parkArr[randIndex].status = parseInt(status);
-    parkArr[randIndex].level = dropBoatLevel;
-    return parkArr;
+    let randIndexArr = _.sampleSize(emptyParkIndexArr, count);
+    return randIndexArr;
+}
+
+//获取更新停船位的数据
+function getUpdatedParkArrData(count, dropBoatLevel, parkArr) {
+    let data = [];
+    let randIndexArr = getRandIndexArr(count, parkArr);
+    for (const iter of randIndexArr) {
+        let dataItem = {
+            status: 1,
+            level: dropBoatLevel,
+            index: iter
+        };
+        data.push(dataItem);
+    }
+    return data;
 }
 
 //根据conditoin获取用户基础信息
@@ -155,41 +167,6 @@ function findUserInfo(condition, cb) {
         }
         if (cb) {
             cb(docs);
-        }
-    });
-}
-
-function dropBoatArrInRecord(condition, count, docs, cb) {
-    let parkArr = docs.parkArr;
-    let data = [];
-    for (let i = 0; i < count; ++i) {
-        let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
-        //获取空闲船位索引数组
-        let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
-        let len = emptyParkIndexArr.length;
-        let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
-        let status = 1;
-        parkArr[randIndex].status = parseInt(status);
-        parkArr[randIndex].level = dropBoatLevel;
-        let dataItem = {
-            index: randIndex,
-            level: dropBoatLevel,
-            status: status
-        };
-        data.push(dataItem);
-    }
-    console.log('====data====: ', data);
-    User.updateOne(condition, {
-        parkArr: parkArr
-    }, (err, raw) => {
-        if (err) {
-            console.error('err: ', err);
-            //TODO 
-            return;
-        }
-        if (cb) {
-            cb(data);
-            return;
         }
     });
 }
@@ -208,8 +185,25 @@ function pushDropCache(docs, type) {
     let dropCache = docs.dropCache;
     if (dropCache.length === 0) {
         dropCache.push(type);
-    } else {
-        return;
+    }
+    return dropCache;
+}
+//更新数据库中dropCache
+function updateUserDropCache(condition, docs, type, num) {
+    let dropCache = docs.dropCache;
+    let addArr = _.fill(Array(num), type); //被添加的数组
+
+    if (type === 2 || (type === 1 && _.last(dropCache) === undefined)) {
+        let tempDropCache = _.concat(dropCache, addArr);
+        User.findOneAndUpdate(condition, {
+            dropCache: tempDropCache
+        }, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                return;
+            }
+            console.log('====update successful====');
+        });
     }
 }
 
@@ -443,7 +437,7 @@ module.exports = {
         });
     },
 
-    dropBoat(userId, cb) { //请求掉落船只
+    dropBoat(userId, type, num, cb) { //请求掉落船只
         let condition = {
             userId: userId
         };
@@ -453,79 +447,31 @@ module.exports = {
                 if (cb) {
                     cb(null);
                 }
-                pushDropCache(docs);
+                updateUserDropCache(condition, docs, type, num);
                 return;
             }
 
             //有空闲位置时
             let dropCache = docs.dropCache;
+            let count = 0; //下落船只数量
             if (dropCache.length === 0) { //下落缓存中无数据时
-                //获取掉落等级
-                let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
-                //获取空闲船位索引数组
-                let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
-                let len = emptyParkIndexArr.length;
-                let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
-                let status = 1;
-                parkArr[randIndex].status = parseInt(status);
-                parkArr[randIndex].level = dropBoatLevel;
-
-                User.updateOne(condition, {
-                    parkArr: parkArr
-                }, (err, raw) => {
-                    let data = {
-                        index: randIndex,
-                        level: dropBoatLevel,
-                        status: status
-                    };
-                    if (err) {
-                        console.error('err: ', err);
-                        //TODO 
-                        return;
-                    }
-                    if (cb) {
-                        cb(data);
-                        return;
-                    }
-                });
+                count = 1;
             } else { //下落缓存中有数据时
                 let emptyParkArr = getEmptyParkArr(parkArr);
-                if (emptyParkArr.length >= dropCache.length) {
-                    for (let i = 0; i < dropCache.length; ++i) {
-                        //获取掉落等级
-                        let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
-                        //获取空闲船位索引数组
-                        let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
-                        let len = emptyParkIndexArr.length;
-                        let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
-                        let status = 1;
-                        parkArr[randIndex].status = parseInt(status);
-                        parkArr[randIndex].level = dropBoatLevel;
-                    }
-                }
+                count = Math.min(emptyParkArr.length, dropCache.length);
             }
-
-            //获取掉落等级
-            let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel);
-            //获取空闲船位索引数组
-            let emptyParkIndexArr = getEmptyParkIndexArr(parkArr);
-            let len = emptyParkIndexArr.length;
-            let randIndex = emptyParkIndexArr[(Math.floor(Math.random() * len))];
-            let status = 1;
-            parkArr[randIndex].status = parseInt(status);
-            parkArr[randIndex].level = dropBoatLevel;
-
+            let dropBoatLevel = getDropBoatLevel(docs.maxOwnedBoatLevel); //下落船只等级
+            let parkArrData = getUpdatedParkArrData(count, dropBoatLevel, parkArr); //所更新的停船位的数组数据
+            for (const iter of parkArrData) {
+                let index = iter.index;
+                parkArr[index] = iter;
+            }
             User.updateOne(condition, {
                 parkArr: parkArr
             }, (err, raw) => {
-                let data = {
-                    index: randIndex,
-                    level: dropBoatLevel,
-                    status: status
-                };
+                let data = parkArrData;
                 if (err) {
                     console.error('err: ', err);
-                    //TODO 
                     return;
                 }
                 if (cb) {
@@ -533,31 +479,6 @@ module.exports = {
                     return;
                 }
             });
-        });
-    },
-    //调落记录中的箱子
-    dropBoatInRecord(userId, cb) {
-        let condition = {
-            userId: userId
-        };
-        findUserInfo(condition, (docs) => {
-            let parkArr = docs.parkArr;
-            if (isParkFull(parkArr)) {
-                if (cb) {
-                    cb(null);
-                }
-                return;
-            }
-            let rewardDropNum = getRewardDropNum(docs);
-            let normalDropNum = getNormalDropNum(docs);
-            let emptyParkArr = getEmptyParkArr(parkArr);
-            let emptyParkLen = emptyParkArr.length;
-            if (rewardDropNum > 0) {
-                let len = 0;
-                let diff = rewardDropNum - emptyParkLen;
-                len = diff >= 0 ? emptyParkLen : rewardDropNum;
-                dropBoatArrInRecord(condition, len, docs, cb);
-            }
         });
     }
 }

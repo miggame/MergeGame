@@ -1,6 +1,6 @@
 //测试服务器配置
 const DebugNetCfg = {
-    httpHost: '192.168.1.113',
+    httpHost: '192.168.1.102',
     httpPort: 9001
 };
 

@@ -70,12 +70,7 @@ cc.Class({
             this._autoCreateBoat();
         } else if (msg === GameMsgHttp.Msg.RequestDropBoat.msg) {
             if (data === null) {
-                // DialogMgr.showTipsWithOkBtn(
-                //     'the parks is full!',
-                //     null,
-                //     null,
-                //     null
-                // );
+                console.log('====没有空闲位====');
                 return;
             }
             this._createDropBoat(data);
@@ -103,11 +98,14 @@ cc.Class({
 
         //判定是否有空船位
         if (!this._isParkFull()) { //有空船位时
-            if (this._checkDropCache()) { //dropCache有缓存数据
-                this._requestDropBoat();
-            } else {
-                this.scheduleOnce(this._requestDropBoat, 5);
-            }
+            // if (this._checkDropCache()) { //dropCache有缓存数据
+            //     this._requestDropBoat(1, 1);
+            // } else {
+            //     this.scheduleOnce(() => {
+            //         this._requestDropBoat(1, 1)
+            //     }, 5);
+            // }
+            this._requestDropBoat(1, 1);
         }
 
         //初始化船的控制监听
@@ -205,25 +203,29 @@ cc.Class({
         return this._getEmptyParkArr().length === 0 ? true : false;
     },
     //请求创建船只
-    _requestDropBoat() {
+    _requestDropBoat(type, num) {
         let sendData = {
-            userId: GameData.playerInfo.userId
+            userId: GameData.playerInfo.userId,
+            type: type, //type:1普通掉落 2奖励掉落
+            num: num //掉落数量
         };
         NetHttpMgr.quest(GameMsgHttp.Msg.RequestDropBoat, sendData);
     },
     //创建掉落船只
     _createDropBoat(data) {
-        let pos = this._getParkPos(data.index);
-        let boatPreNode = cc.instantiate(this.boatPre);
-        this.boatLayer.addChild(boatPreNode);
-        boatPreNode.getComponent('Boat').initView(data.level);
-        boatPreNode.x = pos.x;
-        boatPreNode.y = cc.view.getVisibleSize().height;
-        let moveAct = cc.moveTo(0.5, pos).easing(cc.easeInOut(3.0));
-        let delayAct = cc.delayTime(5);
-        let callBackAct = cc.callFunc(this._requestDropBoat, this);
-        boatPreNode.runAction(cc.sequence(moveAct, delayAct, callBackAct));
-        // boatPreNode.runAction(moveAct);
+        for (const iter of data) {
+            let pos = this._getParkPos(iter.index);
+            let boatPreNode = cc.instantiate(this.boatPre);
+            this.boatLayer.addChild(boatPreNode);
+            boatPreNode.getComponent('Boat').initView(iter.level);
+            boatPreNode.x = pos.x;
+            boatPreNode.y = cc.view.getVisibleSize().height;
+            let moveAct = cc.moveTo(0.5, pos).easing(cc.easeInOut(3.0));
+            boatPreNode.runAction(moveAct);
+        }
+        this.scheduleOnce(() => {
+            this._requestDropBoat(1, 1);
+        }, 5);
     },
 
     //获取具体索引的船位坐标
@@ -284,14 +286,6 @@ cc.Class({
         let rewardDropNum = this._getRewardDropNum();
         let normalDropNum = this._getNormalDropNum();
         return rewardDropNum > 0 || normalDropNum > 0;
-    },
-
-    //请求掉落在记录中的船只
-    _requestDropBoatInRecord() {
-        let sendData = {
-            userId: GameData.playerInfo.userId
-        };
-        NetHttpMgr.quest(GameMsgHttp.Msg.RequestDropBoatInRecord, sendData);
     },
 
     //判定是否掉落缓存中有数据
