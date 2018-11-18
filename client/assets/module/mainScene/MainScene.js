@@ -78,7 +78,8 @@ cc.Class({
             GameMsgHttp.Msg.RequestDropBoat.msg,
             GameLocalMsg.Msg.PushBoatInWay,
             GameLocalMsg.Msg.BoatIsInWay,
-            GameLocalMsg.Msg.PullBoatBackPark
+            GameLocalMsg.Msg.PullBoatBackPark,
+            GameLocalMsg.Msg.MergeBoat
         ];
     },
     _onMsg(msg, data) {
@@ -100,12 +101,35 @@ cc.Class({
             if (inWayFlag) {
                 NetHttpMgr.quest(GameMsgHttp.Msg.PushBoatInWay, sendData);
             } else {
-                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, sendData);
+                if (this._checkBoatCanMerge(data) === false) { //判定是否满足合成或交换条件
+                    ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, index);
+                }
             }
         } else if (msg === GameLocalMsg.Msg.PushBoatInWay) {
             this._updateWay();
         } else if (msg === GameLocalMsg.Msg.PullBoatBackPark) {
             this._updateWay();
+        } else if (msg === GameLocalMsg.Msg.MergeBoat) {
+            if (data.flag === 1) { //合成
+                for (const boatNode of this.boatLayer.children) {
+                    let script = boatNode.getComponent('Boat');
+                    let pos2 = this._getParkPos(data.index2); //合成的目标位置
+                    if (script._index === data.index1) {
+                        boatNode.y = pos2.y;
+                        boatNode.runAction(cc.sequence(cc.moveBy(0.2, cc.v2(-100, 0)), cc.moveBy(0.2, cc.v2(100, 0)), cc.removeSelf()));
+                    }
+                    if (script._index === data.index2) { //index2:目标位置索引
+                        boatNode.y = pos2.y;
+                        boatNode.runAction(cc.sequence(cc.moveBy(0.2, cc.v2(100, 0)), cc.moveBy(0.2, cc.v2(-100, 0)), cc.callFunc(() => {
+                            script._level++;
+                            script.refreshBoatView();
+                            boatNode.position = script._basePos;
+                        })));
+                    }
+                }
+            } else if (data.flag === 2) { //交换
+                this._changeBoatPos(data.index1, data.index2);
+            }
         }
     },
 
@@ -200,8 +224,8 @@ cc.Class({
 
         let boatPreNode = cc.instantiate(this.boatPre);
         this.boatLayer.addChild(boatPreNode);
-        boatPreNode.position = pos;
-        boatPreNode.getComponent('Boat').initView(level, status, index, false);
+        // boatPreNode.position = pos;
+        boatPreNode.getComponent('Boat').initView(pos, level, status, index, false);
     },
 
     //获取空闲船位数组
@@ -243,9 +267,9 @@ cc.Class({
             let pos = this._getParkPos(iter.index);
             let boatPreNode = cc.instantiate(this.boatPre);
             this.boatLayer.addChild(boatPreNode);
-            boatPreNode.getComponent('Boat').initView(iter.level);
-            boatPreNode.x = pos.x;
-            boatPreNode.y = cc.view.getVisibleSize().height;
+            boatPreNode.getComponent('Boat').initView(pos, iter.level, iter.status, iter.index);
+            // boatPreNode.x = pos.x;
+            // boatPreNode.y = cc.view.getVisibleSize().height;
             let moveAct = cc.moveTo(0.5, pos).easing(cc.easeInOut(3.0));
             boatPreNode.runAction(moveAct);
         }
@@ -356,5 +380,45 @@ cc.Class({
         return cc.rectIntersectsRect(wayRect, boundingBox);
     },
 
+    _checkBoatCanMerge(data) {
+        let boatNodeArr = this.boatLayer.children;
+        let len = boatNodeArr.length;
+        for (const boatNode of boatNodeArr) {
+            let script = boatNode.getComponent('Boat');
+            if (data.boatBoundingBox.contains(boatNode.position) && data.index !== script._index && script._status === 1) {
+                let sendData = {
+                    userId: GameData.playerInfo.userId,
+                    index1: data.index,
+                    index2: script._index
+                };
+                NetHttpMgr.quest(GameMsgHttp.Msg.MergeBoat, sendData);
+                return true;
+            }
+        }
+        return false;
+    },
+    //交换船只位置
+    _changeBoatPos(index1, index2) {
+        let pos1 = this._getParkPos(index1);
+        let pos2 = this._getParkPos(index2);
+        for (const boatNode of this.boatLayer.children) {
+            let script = boatNode.getComponent('Boat');
+            if (script._index === index1) {
+                boatNode.runAction(cc.moveTo(0.2, pos2));
+                script._index = index2;
+            } else if (script._index === index2) {
+                boatNode.runAction(cc.moveTo(0.2, pos1));
+                script._index = index1;
+            }
+        }
+    },
 
+    _createMergeBoatOnPark(index) {
+        let pos = this._getParkPos(index);
+        let level = GameData.playerInfo.parkArr[index].level;
+        let status = GameData.playerInfo.parkArr[index].status;
+        let boatPreNode = cc.instantiate(this.boatPre);
+        this.boatLayer.addChild(boatPreNode);
+        boatPreNode.getComponent('Boat').initView(pos, level, status, index, false); //flase代表直接出船
+    }
 });

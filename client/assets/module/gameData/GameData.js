@@ -18,8 +18,6 @@ module.exports = {
         gameData: null,
         parkArr: [],
         way: 0,
-        // normalDrop: 0,
-        // rewardDrop: 0
         dropCache: []
     },
 
@@ -49,8 +47,6 @@ module.exports = {
             this.playerInfo.gameData = data.gameData;
             this.playerInfo.parkArr = data.parkArr;
             this.playerInfo.way = data.way;
-            // this.playerInfo.normalDrop = data.normalDrop;
-            // this.playerInfo.rewardDrop = data.rewardDrop;
             this.playerInfo.dropCache = data.dropCache;
         }
     },
@@ -68,14 +64,16 @@ module.exports = {
         this.playerInfo.gameData = null;
         this.playerInfo.parkArr = [];
         this.playerInfo.way = 0;
-        // this.playerInfo.normalDrop = 0;
-        // this.playerInfo.rewardDrop = 0;
         this.playerInfo.dropCache = [];
     },
 
     resetGameData() {
         this.gameData = null;
     },
+
+    // getParkDataByProperty(index, str) {
+    //     return this.playerInfo.parkArr[index][str];
+    // },
 
     initGameDataEvent() {
         ObserverMgr.removeEventListenerWithObject(this);
@@ -110,6 +108,14 @@ module.exports = {
             if (data !== null) {
                 this.playerInfo.parkArr = data.parkArr;
                 ObserverMgr.dispatchMsg(GameLocalMsg.Msg.PullBoatBackPark, data);
+            }
+        }, this);
+
+        //合成或交换船位置
+        ObserverMgr.addEventListener(GameMsgHttp.Msg.MergeBoat.msg, (msg, data) => {
+            if (data !== null) {
+                this.playerInfo.parkArr = data.parkArr;
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.MergeBoat, data);
             }
         }, this);
     }

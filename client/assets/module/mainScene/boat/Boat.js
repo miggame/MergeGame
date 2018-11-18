@@ -1,5 +1,6 @@
 let Observer = require('Observer');
 let ObserverMgr = require('ObserverMgr');
+let Util = require('Util');
 cc.Class({
     extends: Observer,
 
@@ -36,13 +37,14 @@ cc.Class({
         return [
             GameLocalMsg.Msg.BoatGoBack,
             GameLocalMsg.Msg.PushBoatInWay,
-            GameLocalMsg.Msg.PullBoatBackPark
+            GameLocalMsg.Msg.PullBoatBackPark,
         ];
     },
     _onMsg(msg, data) {
         if (msg === GameLocalMsg.Msg.BoatGoBack) {
-            let index = data.index;
-            if (this._index === index) {
+            // let index = data.index;
+            if (this._index === data) {
+                if (this.node.position === this._basePos) return;
                 this.node.position = this._basePos;
                 this.node.rotation = 0;
                 ObserverMgr.dispatchMsg(GameLocalMsg.Msg.ParkHideBoatShadow, {
@@ -50,17 +52,15 @@ cc.Class({
                 });
             }
         } else if (msg === GameLocalMsg.Msg.PushBoatInWay) {
-            let index = data.index;
-            if (this._index === index) {
+            // let index = data.index;
+            if (this._index === data.index) {
                 this._playBoatMove();
             }
         } else if (msg === GameLocalMsg.Msg.PullBoatBackPark) {
-            let index = data.index;
-            if (this._index === index) {
+            // let index = data.index;
+            if (this._index === data.index) {
                 this._stopBoatMove();
-                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, {
-                    index: this._index
-                });
+                ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatGoBack, this._index);
             }
         }
     },
@@ -75,7 +75,9 @@ cc.Class({
     },
 
     // update (dt) {},
-    initView(level, status, index, flag = true) {
+    initView(pos, level, status, index, flag = true) {
+        this.node.position = pos;
+        this._basePos = pos;
         this._status = status;
         this._level = level;
         this._index = index;
@@ -95,7 +97,9 @@ cc.Class({
         this.boxNode.active = false;
         this.spBoat.node.active = !this.boxNode.active;
         // this.spBoat.node.y = this.spBoat.node.y + this.spBoat.node.height / 2;
-        this._showLevel();
+        // Util.setSpriteFrame('boat/boat_' + this._level, this.spBoat);
+        this.refreshBoatView();
+        // this._showLevel();
         //TODO 根据status判断船是运动还是静止 
 
     },
@@ -128,7 +132,8 @@ cc.Class({
             let boatBoundingBox = this.node.getBoundingBox();
             let sendData = {
                 boatBoundingBox: boatBoundingBox,
-                index: this._index
+                index: this._index,
+                level: this._level
             }
             ObserverMgr.dispatchMsg(GameLocalMsg.Msg.BoatIsInWay, sendData);
         });
@@ -144,5 +149,17 @@ cc.Class({
 
     _stopBoatMove() {
         this.node.getComponent(cc.Animation).stop('BoatMove');
+    },
+
+    //检测船只与船只是否有碰撞
+    _checkBoatIntersect(boundingBox) {
+        return boundingBox.contains(this.node.position);
+    },
+
+    //升级船只图片
+    refreshBoatView() {
+        Util.setSpriteFrame('boat/boat_' + this._level, this.spBoat);
+        this.lblBoatLevel.node.active = this.spBoat.node.active;
+        this.lblBoatLevel.string = this._level;
     }
 });

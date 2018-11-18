@@ -207,6 +207,36 @@ function updateUserDropCache(condition, docs, type, num) {
     }
 }
 
+//更新合成船只的数据
+function updateMergeBoatData(condition, parkArr, index1, index2, cb) {
+    let data1 = parkArr[index1];
+    let data2 = parkArr[index2];
+    let flag = 0; //1:合成，2:交换 
+    if (data1.level === data2.level) { //合成
+        data2.level += 1;
+        data1.level = 0;
+        data1.status = 0;
+        flag = 1;
+    } else { //交换位置
+        [data1.level, data2.level] = [data2.level, data1.level]; //交换等级
+        flag = 2;
+    }
+    parkArr[index1] = data1;
+    parkArr[index2] = data2;
+    User.findOneAndUpdate(condition, {
+        parkArr: parkArr
+    }, (err, raw) => {
+        if (err) {
+            console.error('err: ', err);
+            return;
+        }
+        if (cb) {
+            cb(parkArr, flag);
+        }
+        console.log('====update successful====');
+    })
+}
+
 module.exports = {
     init(config) { //初始化数据库
         let host = config.host;
@@ -509,5 +539,23 @@ module.exports = {
                 }
             });
         });
+    },
+
+    mergeBoat(userId, index1, index2, cb) {
+        let condition = {
+            userId: userId
+        };
+        User.findOne(condition, (err, docs) => {
+            if (err) {
+                console.error('err: ', err);
+                return;
+            }
+            let parkArr = docs.parkArr;
+            updateMergeBoatData(condition, parkArr, index1, index2, (parkArr, flag) => {
+                if (cb) {
+                    cb(parkArr, flag);
+                }
+            });
+        })
     }
 }

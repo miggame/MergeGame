@@ -149,6 +149,28 @@ app.get('/pullBoatBackPark', (req, res) => {
     });
 });
 
+//合并或交换船只
+app.get('/mergeBoat', (req, res) => {
+    let reqData = req.query;
+    let userId = reqData.userId;
+    let index1 = parseInt(reqData.index1);
+    let index2 = parseInt(reqData.index2);
+    db.mergeBoat(userId, index1, index2, (parkArr, flag) => {
+        let ret = {
+            msgId: 8001,
+            errcode: 0,
+            errmsg: 'ok',
+            data: {
+                parkArr: parkArr,
+                index1: index1,
+                index2: index2,
+                flag: flag
+            }
+        };
+        send(res, ret);
+    });
+});
+
 module.exports = {
     start(config) { //config对应account的配置
         app.listen(config.port);

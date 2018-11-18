@@ -8,5 +8,6 @@ window.GameLocalMsg = {
         PullBoatBackPark: 'GameLocalMsg_PullBoatBackPark', //收回船到船位上
         ParkShowBoatShadow: 'GameLocalMsg_ParkShowBoatShadow', //在船位层的船位上显示船只阴影
         ParkHideBoatShadow: 'GameLocalMsg_ParkHideBoatShadow', //在船位层的船位上隐藏船只阴影
+        MergeBoat: 'GameLocalMsg_MergeBoat' //合并船只或者交换位置
     }
 }

@@ -27,6 +27,10 @@ window.GameMsgHttp = {
         PullBoatBackPark: {
             id: 7001,
             msg: 'PullBoatBackPark'
+        },
+        MergeBoat: {
+            id: 8001,
+            msg: 'MergeBoat'
         }
 
     },
